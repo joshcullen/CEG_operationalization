@@ -8,19 +8,19 @@ Based on need, this repo may change to account for additional data sources, mode
 
 ├── data_acquisition
 │   ├── R
-│   └── rasters
-│       ├── CMEMS
-│       ├── ERDDAP
-│       └── ROMS
+│   └── netcdfs
+│       ├── cmems_ncdfs
+│       ├── erddap_ncdfs
+│       └── roms_ncdfs
 ├── model_prediction
 │   ├── blue_whale
 │   ├── humpback_whale
 │   └── leatherback
-│       ├── model_CMEMS
+│       ├── model_cmems
 │       │   ├── R
 │       │   ├── img
 │       │   └── rasters
-│       └── model_ROMS
+│       └── model_roms
 │           ├── R
 │           ├── img
 │           └── rasters
