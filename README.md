@@ -1,13 +1,29 @@
-# Simple NOAA branded website with
+# Operationalization of tools for the NOAA SWFSC Climate & Ecosystems Group
 
-* License
-* Disclaimers
-* NMFS palette
+This repository serves as a centralized location for running scheduled jobs that provide input for a variety of operational tools. Specifically, it contains all code necessary to download environmental data from different sources (i.e., ROMS, ERDDAP, CMEMS) on a scheduled basis, make model predictions for relevant marine species, and generate products (e.g., rasters, images). 
 
-# How do I use?
+Based on need, this repo may change to account for additional data sources, models, and species of interest. In its current form, below is a directory tree to show how this repo will be structured:
 
-1. Click the big green button that says "Use this Template" and follow the instructions
-2. On your new repo, enable GitHub Pages by going to Settings and then clicking Pages in the sidebar. Select to make Pages from the `docs` folder.
-<img width="313" alt="image" src="https://user-images.githubusercontent.com/2545978/195947963-73eb3544-68ff-4e50-83c0-33a18fa787d5.png">
-3. Make sure GitHub Actions are allowed by going to Settings then Actions - General in the sidebar.
-4. Make a change to your repo (say the Readme), then click on the Actions tab. You should see the website build action followed by the GitHub Pages Actions run.
+```bash
+
+├── data_acquisition
+│   ├── R
+│   └── rasters
+│       ├── CMEMS
+│       ├── ERDDAP
+│       └── ROMS
+├── model_prediction
+│   ├── blue_whale
+│   ├── humpback_whale
+│   └── leatherback
+│       ├── model_CMEMS
+│       │   ├── R
+│       │   ├── img
+│       │   └── rasters
+│       └── model_ROMS
+│           ├── R
+│           ├── img
+│           └── rasters
+
+```
+
