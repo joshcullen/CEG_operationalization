@@ -17,7 +17,7 @@ download_erddap = function(ncdir_erddap, url_erddap, variable_erddap, savename_e
   out_file = glue("{ncdir_erddap}/{savename_erddap}.nc")
   
   # Download data
-  GET(url_erddap, write_disk(out_file))
+  GET(url_erddap, write_disk(out_file, overwrite = TRUE))
   
 }
 
@@ -40,10 +40,14 @@ download_cmems = function(path_copernicus_marine_toolbox, ncdir_cmems, product_c
                         variable_cmems, savename_cmems, get_date) {
   
   # Write code from copernicusmarine via CLI as char string
-  command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} -t {get_date} -T {get_date} --variable {variable_cmems} -o {ncdir_cmems} -f {savename_cmems} --force-download")   
+  command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} \\
+                  -t {get_date} -T {get_date} \\
+                  -z 0. -Z 0. \\
+                  --variable {variable_cmems} \\
+                  -o {ncdir_cmems} -f {savename_cmems} --force-download")   
   
   # Run command
-  system(command, intern = TRUE)
+  system(command, intern = FALSE)
   
 }
 

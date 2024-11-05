@@ -1,79 +1,72 @@
-library(glue)
 
-path <- "/Users/heatherwelch/Dropbox/Josh/Openscapes/github/CEG_operationalization" ## no more separate source_path... scripts + products in one repo
+### Example script for downloading environmental data ###
+
+# path <- "/Users/heatherwelch/Dropbox/Josh/Openscapes/github/CEG_operationalization" ## no more separate source_path... scripts + products in one repo
 path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
+# path_copernicus_marine_toolbox = "~/miniconda3/envs/copernicusmarine/bin/copernicusmarine"
 
-source(glue("{path}/load_libs.R"))
-source(glue("{path}/data_acquisition/R/acquire_utils.R"))
+source("load_libs.R")
+source("data_acquisition/R/acquire_utils.R")
 
-ncdir_erddap=glue("{path}/data_acquisition/netcdfs/erddap_ncdfs")
-ncdir_cmems=glue("{path}/data_acquisition/netcdfs/cmems_ncdfs")
-ncdir_roms=glue("{path}/data_acquisition/netcdfs/roms_ncdfs")
+ncdir_erddap = "data_acquisition/netcdfs/erddap_ncdfs"
+ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
+ncdir_roms = "data_acquisition/netcdfs/roms_ncdfs"
 
-get_date="2024-10-01" 
+get_date = "2024-10-02" 
 # when this script is operational, I think we'll want it to check for new envt data each day from launch day to sys.date (similar to the OPC tool)
 # so that it's always trying to backfill missing envt data
 
-## erddap ####
+################
+#### erddap ####
+################
 # each erddap product has a distinct url set up - e.g. some have time slots, some do lat first lon second, some do the reverse. Not sure how to build it within the function without having it break across products
-# erddap only allows 2GB requests at once - one day of jplMURSST41 is ~5 GB. Dividing latitudes into 5 separate downloads 
-# testing with small longitude width because erddap takes so long
-# this is so chaotic - any suggestions for cleaning it up?
 
-product_erddap="jplMURSST41"
-variable_erddap="analysed_sst"
+# Define info for product download
+product_erddap = "noaacwBLENDEDsstDNDaily"
+variable_erddap = "analysed_sst"
+savename_erddap = glue("{product_erddap}_{variable_erddap}_{get_date}")
 
-tryCatch(
-  expr ={
-    
-## download 10 lat chunks
-# 180 degrees long / 10 chunks = 18 degrees long per chunk
-for(i in 0:9){
-  start_lat=-89.99+(18*i)
-  end_lat=-89.99+(18*(i+1))
-  if(i==9){end_lat=89.99}
-  
-  print(glue("start = #{i}:{start_lat}"))
-  print(glue("end = #{i}:{end_lat}"))
-  
-savename_erddap=glue("{product_erddap}_{variable_erddap}_{get_date}_{start_lat}_{end_lat}")
-url_erddap=glue("https://coastwatch.pfeg.noaa.gov/erddap/griddap/{product_erddap}.nc?{variable_erddap}%5B({get_date}T09:00:00Z):1:({get_date}T09:00:00Z)%5D%5B({start_lat}):1:({end_lat})%5D%5B(-179.99):1:(-170.0)%5D") # partial lon
-# url_erddap=glue("https://coastwatch.pfeg.noaa.gov/erddap/griddap/{product_erddap}.nc?{variable_erddap}%5B({get_date}T09:00:00Z):1:({get_date}T09:00:00Z)%5D%5B({start_lat}):1:({end_lat})%5D%5B(-179.99):1:(180.0)%5D")  # full lon
-download_erddap(ncdir_erddap,url_erddap,variable_erddap,savename_erddap)
-}
+url_erddap = glue("https://coastwatch.noaa.gov/erddap/griddap/{product_erddap}.nc?{variable_erddap}%5B({get_date}T12:00:00Z):1:({get_date}T12:00:00Z)%5D%5B(-89.99):1:(89.99)%5D%5B(-179.99):1:(180.0)%5D")
 
-## merge chunks
-erddap_ras_list=list.files(ncdir_erddap,pattern=glue("{product_erddap}_{variable_erddap}_{get_date}"),full.names = T) 
-erddap_ras=erddap_ras_list%>% 
-  purrr::map(.,
-           ~rast(.)) %>% 
-  sprc() %>% 
-  merge()
 
-## write out merged file and delete lat chunks
-writeCDF(erddap_ras, glue("{ncdir_erddap}/{product_erddap}_{variable_erddap}_{get_date}.nc"), varname=variable_erddap,  unit="degree_C",overwrite=T)
-file.remove(erddap_ras_list)
-
-  },
-error = function(e){
+# Download netCDF if available
+if (!http_error(url_erddap)) {
+  download_erddap(ncdir_erddap, url_erddap, variable_erddap, savename_erddap)
+} else {
   message(glue("{variable_erddap} from ERDDAP not available {get_date}"))
-  print(e)
 }
-)
 
-## cmems ####
-# thinking about scaling this up to multiple cmems variables - I saw your map code in the top predator watch tool
-# is there a way to dynamically glue as you define a list, e.g. so savename_cmems could be defined during list creation?
 
-product_cmems = "cmems_mod_glo_phy_anfc_0.083deg_P1D-m"
-variable_cmems <- "mlotst"
-savename_cmems=glue("{product_cmems}_{variable_cmems}_{get_date}")
+
+###############
+#### cmems ####
+###############
+
+# Create list of data products, variables, and exported file names
+cmems_product_list <- list(list(productID = "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+                                variable = "mlotst"),
+                           list(productID = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+                                variable = "thetao")) |> 
+  map_depth(.depth = 1,
+            .f = function(z) {
+              filename <- list(savename = glue("{z$productID}_{z$variable}_{get_date}"))
+              append(z, filename)  #append filename to end of current lists
+              }
+            )
+
 
 tryCatch(
   expr ={
     
-download_cmems(path_copernicus_marine_toolbox,ncdir_cmems,product_cmems,variable_cmems,savename_cmems,get_date)
-    
+    # Download netCDF files if available
+    purrr::map(cmems_product_list,
+               ~download_cmems(path_copernicus_marine_toolbox,
+                               ncdir_cmems,
+                               .x$productID, 
+                               .x$variable,
+                               .x$savename,
+                               get_date))
+
   },
 error = function(e){
   message(glue("{variable_cmems} from CMEMS not available {get_date}"))
@@ -81,13 +74,17 @@ error = function(e){
 }
 )
 
-## roms ####
-variable_roms="sst"
-savename_roms=glue("roms_{variable_roms}_{get_date}")
+
+##############
+#### roms ####
+##############
+
+variable_roms = "sst"
+savename_roms = glue("roms_{variable_roms}_{get_date}")
 
 tryCatch(
   expr ={
-download_roms(ncdir_roms,variable_roms,savename_roms,get_date)
+download_roms(ncdir_roms, variable_roms, savename_roms, get_date)
 
   },
 error = function(e){
