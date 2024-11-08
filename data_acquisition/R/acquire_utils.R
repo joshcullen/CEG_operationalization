@@ -32,22 +32,26 @@ download_erddap = function(ncdir_erddap, url_erddap, variable_erddap, savename_e
 #' @param variable_cmems Variable name of interest from relevant CMEMS product.
 #' @param savename_cmems The file name to save the downloaded netCDF.
 #' @param get_date Date of interest in YYYY-MM-DD format.
+#' @param var_depth_min Minimum depth for which to extract values.
+#' @param var_depth_max Maximum depth for which to extract values.
 #'
 #' @return A netCDF file for relevant data is downloaded locally to the directories specified in the function.
 #' 
 #' @export
 download_cmems = function(path_copernicus_marine_toolbox, ncdir_cmems, product_cmems,
-                        variable_cmems, savename_cmems, get_date) {
+                          variable_cmems, savename_cmems, get_date, var_depth_min, var_depth_max) {
   
-  # Write code from copernicusmarine via CLI as char string
+  # Write code from copernicusmarine via CLI
   command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} \\
                   -t {get_date} -T {get_date} \\
-                  -z 0. -Z 0. \\
+                  -z {var_depth_min}. -Z {var_depth_max}. \\
                   --variable {variable_cmems} \\
                   -o {ncdir_cmems} -f {savename_cmems} --force-download")   
   
   # Run command
   system(command, intern = FALSE)
+  
+  
   
 }
 
@@ -66,9 +70,6 @@ download_cmems = function(path_copernicus_marine_toolbox, ncdir_cmems, product_c
 #' @export
 download_roms = function(ncdir_roms, variable_roms, savename_roms, get_date) { 
   
-  # To prevent writing aux files
-  # setGDALconfig("GDAL_PAM_ENABLED", "FALSE")
-
   # Define number of days since ref date (2011-01-02) for url index
   ref_date <- dmy('02-01-2011')
   new_date <- as.Date(get_date)
@@ -97,3 +98,34 @@ download_roms = function(ncdir_roms, variable_roms, savename_roms, get_date) {
   writeCDF(roms_ras, glue("{ncdir_roms}/{savename_roms}.nc"), varname = variable_roms, overwrite = TRUE)
   
     }
+
+
+
+
+#' (WORK IN PROGRESS) Calculated derived variables from downloaded products
+#'
+#' @param ncdir_cmems 
+#' @param meta 
+#' @param variable 
+#' @param savename 
+#' @param get_date 
+#'
+#' @return
+#' 
+#' @export
+calc_derived_cmems = function(ncdir_cmems, meta, variable, savename, get_date) {
+  
+  # Calculate SST_sd (from SST)
+  if (variable == 'sst_sd') {
+    sst_meta <- meta |> 
+      filter(data_type == 'CMEMS',
+             variable == 'analysed_sst')
+    sst_sd <- rast(glue("{ncdir_cmems}/{sst_meta$product}_{sst_meta$variable}_{get_date}.nc")) |> 
+      focal(r2, w = matrix(1, nrow=5, ncol=5), fun = mean, na.rm=TRUE) ## resampling to 1.25
+    writeRaster(r_mean, glue("{finaldir}/sst.grd"), overwrite = TRUE)
+    
+    rasSD <- focal(r2, w = matrix(1, nrow=5, ncol=5), fun = sd, na.rm=TRUE)
+    writeRaster(rasSD, glue("{finaldir}/sst_sd.grd"), overwrite = TRUE)
+  } 
+  
+}

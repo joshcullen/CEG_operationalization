@@ -16,14 +16,16 @@ Based on need, this repo may change to account for additional data sources, mode
 │   ├── blue_whale
 │   ├── humpback_whale
 │   └── leatherback
-│       ├── model_cmems
+│       ├── ROMS_lbst
 │       │   ├── R
 │       │   ├── img
-│       │   └── rasters
-│       └── model_roms
+│       │   ├── rasters
+│       │   └── static
+│       └── TopPred_lbst
 │           ├── R
 │           ├── img
-│           └── rasters
+│           ├── rasters
+│           └── static
 
 ```
 

@@ -2,11 +2,14 @@
 ### Example script for downloading environmental data ###
 
 # path <- "/Users/heatherwelch/Dropbox/Josh/Openscapes/github/CEG_operationalization" ## no more separate source_path... scripts + products in one repo
-path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
-# path_copernicus_marine_toolbox = "~/miniconda3/envs/copernicusmarine/bin/copernicusmarine"
+# path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
+path_copernicus_marine_toolbox = "~/miniconda3/envs/copernicusmarine/bin/copernicusmarine"
 
 source("load_libs.R")
 source("data_acquisition/R/acquire_utils.R")
+
+# Load metadata
+meta <- read_csv("docs/model_metadata.csv")
 
 ncdir_erddap = "data_acquisition/netcdfs/erddap_ncdfs"
 ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
@@ -15,6 +18,9 @@ ncdir_roms = "data_acquisition/netcdfs/roms_ncdfs"
 get_date = "2024-10-02" 
 # when this script is operational, I think we'll want it to check for new envt data each day from launch day to sys.date (similar to the OPC tool)
 # so that it's always trying to backfill missing envt data
+
+
+
 
 ################
 #### erddap ####
@@ -42,15 +48,24 @@ if (!http_error(url_erddap)) {
 #### cmems ####
 ###############
 
-# Create list of data products, variables, and exported file names
-cmems_product_list <- list(list(productID = "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
-                                variable = "mlotst"),
-                           list(productID = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-                                variable = "thetao")) |> 
+# Define CMEMS metadata object
+meta_cmems <- meta |> 
+  filter(data_type == 'CMEMS',
+         category != 'derived' | is.na(category)) |> 
+  mutate(var_depth_min = case_when(variable != 'o2' ~ 0,
+                                   TRUE ~ 200),
+         var_depth_max = case_when(variable %in% c('analysed_sst','CHL','mlotst') ~ 0,
+                                   TRUE ~ 200))
+
+
+# Transform to list and add exported file names
+cmems_product_list <- meta_cmems |> 
+  split(~variable) |> 
   map_depth(.depth = 1,
             .f = function(z) {
-              filename <- list(savename = glue("{z$productID}_{z$variable}_{get_date}"))
-              append(z, filename)  #append filename to end of current lists
+              z$savename <- glue("{z$product}_{z$variable}_{get_date}")
+              
+              return(z)
               }
             )
 
@@ -62,10 +77,12 @@ tryCatch(
     purrr::map(cmems_product_list,
                ~download_cmems(path_copernicus_marine_toolbox,
                                ncdir_cmems,
-                               .x$productID, 
+                               .x$product, 
                                .x$variable,
                                .x$savename,
-                               get_date))
+                               get_date,
+                               .x$var_depth_min,
+                               .x$var_depth_max))
 
   },
 error = function(e){
@@ -75,16 +92,38 @@ error = function(e){
 )
 
 
+
+
 ##############
 #### roms ####
 ##############
 
-variable_roms = "sst"
-savename_roms = glue("roms_{variable_roms}_{get_date}")
+# Define ROMS metadata object
+meta_roms <- meta |> 
+  filter(data_type == 'ROMS',
+         category != 'derived')
+
+
+# Transform to list and add exported file names
+roms_product_list <- meta_roms |> 
+  split(~variable) |> 
+  map_depth(.depth = 1,
+            .f = function(z) {
+              z$savename <- glue("roms_{z$variable}_{get_date}")
+              
+              return(z)
+            }
+  )
+
 
 tryCatch(
   expr ={
-download_roms(ncdir_roms, variable_roms, savename_roms, get_date)
+    # Download netCDF files if available
+    purrr::map(roms_product_list,
+               ~download_roms(ncdir_roms,
+                              .x$variable,
+                              .x$savename,
+                              get_date))
 
   },
 error = function(e){
