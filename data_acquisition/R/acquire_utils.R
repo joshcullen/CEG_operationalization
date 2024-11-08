@@ -99,33 +99,3 @@ download_roms = function(ncdir_roms, variable_roms, savename_roms, get_date) {
   
     }
 
-
-
-
-#' (WORK IN PROGRESS) Calculated derived variables from downloaded products
-#'
-#' @param ncdir_cmems 
-#' @param meta 
-#' @param variable 
-#' @param savename 
-#' @param get_date 
-#'
-#' @return
-#' 
-#' @export
-calc_derived_cmems = function(ncdir_cmems, meta, variable, savename, get_date) {
-  
-  # Calculate SST_sd (from SST)
-  if (variable == 'sst_sd') {
-    sst_meta <- meta |> 
-      filter(data_type == 'CMEMS',
-             variable == 'analysed_sst')
-    sst_sd <- rast(glue("{ncdir_cmems}/{sst_meta$product}_{sst_meta$variable}_{get_date}.nc")) |> 
-      focal(r2, w = matrix(1, nrow=5, ncol=5), fun = mean, na.rm=TRUE) ## resampling to 1.25
-    writeRaster(r_mean, glue("{finaldir}/sst.grd"), overwrite = TRUE)
-    
-    rasSD <- focal(r2, w = matrix(1, nrow=5, ncol=5), fun = sd, na.rm=TRUE)
-    writeRaster(rasSD, glue("{finaldir}/sst_sd.grd"), overwrite = TRUE)
-  } 
-  
-}
