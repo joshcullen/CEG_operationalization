@@ -20,7 +20,7 @@ outdir_cmems <- "data_processing/TopPredatorWatch/rasters"
 get_date <- Sys.Date()
 
 # Define raster template
-template <- rast("data_processing/TopPredatorWatch/static/template.grd")
+template <- rast("data_processing/TopPredatorWatch/static/template.tiff")
 
 
 
@@ -53,7 +53,8 @@ walk(meta_cmems,
                   outdir = outdir_cmems,
                   savename = .x$savename,
                   get_date = get_date,
-                  template = template),
+                  template = template,
+                  tool = "TopPredatorWatch"),
     .progress = TRUE
     )
 
@@ -76,6 +77,7 @@ walk(cmems_meta_derived,
      ~calc_derived_vars(dir = outdir_cmems,
                    variable = .x$variable,
                    savename = .x$savename,
-                   get_date = get_date),
+                   get_date = get_date,
+                   tool = "ROMS"),
      .progress = TRUE
 )

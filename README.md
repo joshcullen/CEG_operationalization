@@ -8,24 +8,36 @@ Based on need, this repo may change to account for additional data sources, mode
 
 ├── data_acquisition
 │   ├── R
+│   │   ├── acquire_example.R
+│   │   └── acquire_utils.R
 │   └── netcdfs
 │       ├── cmems_ncdfs
 │       ├── erddap_ncdfs
 │       └── roms_ncdfs
-├── model_prediction
-│   ├── blue_whale
-│   ├── humpback_whale
-│   └── leatherback
-│       ├── ROMS_lbst
-│       │   ├── R
-│       │   ├── img
-│       │   ├── rasters
-│       │   └── static
-│       └── TopPred_lbst
-│           ├── R
-│           ├── img
-│           ├── rasters
-│           └── static
+├── data_processing
+│   ├── ROMS
+│   │   ├── R
+│   │   ├── rasters
+│   │   └── static
+│   └── TopPredatorWatch
+│       ├── R
+│       ├── rasters
+│       └── static
+├── docs
+│   └── model_metadata.csv
+└── model_prediction
+    ├── ROMS
+    │   ├── R
+    │   ├── img
+    │   ├── rasters
+    │   └── static
+    │       └── lbst_noSSH.res1.tc3.lr01.single.rds
+    └── TopPredatorWatch
+        ├── R
+        ├── img
+        ├── rasters
+        └── static
+            └── species_bernoulli_03_22_21_step_lr0.01_tc3_bf0.6_tol1e-05_bernoulli_leatherbackTurtle_TOPP.rds
 
 ```
 

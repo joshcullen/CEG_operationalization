@@ -2,7 +2,7 @@
 
 #' Post-process the netCDF files for easy use by models and to generate derived variables
 #' 
-#' For now, I've only built this for Top Predator Watch based on CMEMS products. But ideally this will be expanded to include other tools and these can be specified using the `tool` argument
+#' For now, I've only built this for Top Predator Watch based on CMEMS products. But ideally this will be expanded to include other tools and these can be specified using the `tool` argument.
 #'
 #' @param infile The full file path for the netCDF file to be imported to R as a SpatRaster.
 #' @param indir Directory to which the netCDF files are imported.
@@ -10,13 +10,49 @@
 #' @param outdir Directory to which processed netCDF files are saved.
 #' @param savename The file name to save the processed raster.
 #' @param get_date Date of interest in YYYY-MM-DD format.
-#' @param tool NOT CURRENTLY USED; this could specify which variables should be calculated and how depending on the tool selected.
+#' @param tool Name of the tool to for data processing; 'TopPredatorWatch' or 'ROMS'.
 #' @param template A SpatRaster layer of the spatial extent, resolution, and projection of interest for the particular tool.
 #'
 #' @return A geoTIFF file is exported locally to the `outdir` path that was specified.
 #' 
 #' @export
-process_vars = function(infile, indir, variable, outdir, savename, get_date, tool = NULL, template) {
+process_vars = function(infile, indir, variable, outdir, savename, get_date, tool, template) {
+  
+  switch(tool,
+         "TopPredatorWatch" = process_vars_TopPred(infile = infile,
+                                                   indir = indir,
+                                                   variable = variable,
+                                                   outdir = outdir,
+                                                   savename = savename,
+                                                   get_date = get_date,
+                                                   template = template),
+         
+         "ROMS" = message("This function does not yet exist."),
+         
+         stop("Tool must be one of either 'TopPredatorWatch' or 'ROMS'.")
+         )
+  
+}
+
+
+
+
+#' Post-process the netCDF files for easy use by Top Predator Watch tool
+#' 
+#' This function is specifically built for Top Predator Watch based on CMEMS products. Other functions are available for processing covariates for other tools.
+#'
+#' @param infile The full file path for the netCDF file to be imported to R as a SpatRaster.
+#' @param indir Directory to which the netCDF files are imported.
+#' @param variable The name for the variable of interest.
+#' @param outdir Directory to which processed netCDF files are saved.
+#' @param savename The file name to save the processed raster.
+#' @param get_date Date of interest in YYYY-MM-DD format.
+#' @param template A SpatRaster layer of the spatial extent, resolution, and projection of interest for the particular tool.
+#'
+#' @return A geoTIFF file is exported locally to the `outdir` path that was specified.
+#' 
+#' @export
+process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_date, template) {
   
   # Only attempt to process if file exists
   if (file.exists(glue("{indir}/{infile}"))) {
@@ -56,8 +92,6 @@ process_vars = function(infile, indir, variable, outdir, savename, get_date, too
   }
   
   
-  
-  
 }
 
 
@@ -71,19 +105,49 @@ process_vars = function(infile, indir, variable, outdir, savename, get_date, too
 #' @param variable Name of derived variable of interest.
 #' @param savename The file name to save the derived raster.
 #' @param get_date Date of interest in YYYY-MM-DD format.
-#' @param tool NOT CURRENTLY USED; this could specify which variables should be calculated and how depending on the tool selected.
+#' @param tool Name of the tool to for data processing; 'TopPredatorWatch' or 'ROMS'.
 #'
 #' @return A geoTIFF file is exported locally to the directories specified in the function.
 #' 
 #' @export
-calc_derived_vars = function(dir, variable, savename, get_date, tool = NULL) {
+calc_derived_vars = function(dir, variable, savename, get_date, tool) {
+  
+  switch(tool,
+         "TopPredatorWatch" = calc_derived_vars_TopPred(dir = dir,
+                                                        variable = variable,
+                                                        savename = savename,
+                                                        get_date = get_date),
+         
+         "ROMS" = message("This function does not yet exist."),
+         
+         stop("Tool must be one of either 'TopPredatorWatch' or 'ROMS'.")
+  )
+  
+}
+
+
+
+
+#' Calculated derived variables from downloaded products for Top Predator Watch
+#' 
+#' This function is specifically built for Top Predator Watch based on CMEMS products. Other functions are available for processing covariates for other tools.
+#'
+#' @param dir The directory from which to read and write derived variables.
+#' @param variable Name of derived variable of interest.
+#' @param savename The file name to save the derived raster.
+#' @param get_date Date of interest in YYYY-MM-DD format.
+#'
+#' @return A geoTIFF file is exported locally to the directories specified in the function.
+#' 
+#' @export
+calc_derived_vars_TopPred = function(dir, variable, savename, get_date) {
   
   
   if (variable == 'sst_sd') {  # Calculate SST_sd
     
     sst_sd <- rast(glue("{dir}/sst_{get_date}.tiff")) |> 
       focal(w = matrix(1, nrow = 5, ncol = 5), fun = sd, na.rm = TRUE)
-    writeRaster(sst_sd, glue("{dir}/sst_sd.tiff"), overwrite = TRUE)
+    writeRaster(sst_sd, glue("{dir}/sst_sd_{get_date}.tiff"), overwrite = TRUE)
     
   } else if (variable == 'eke') {  # Calculate EKE
     
