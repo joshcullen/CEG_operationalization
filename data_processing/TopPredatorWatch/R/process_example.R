@@ -78,6 +78,6 @@ walk(cmems_meta_derived,
                    variable = .x$variable,
                    savename = .x$savename,
                    get_date = get_date,
-                   tool = "ROMS"),
+                   tool = "TopPredatorWatch"),
      .progress = TRUE
 )

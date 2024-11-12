@@ -71,6 +71,11 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
       r <- rotate(r, left = FALSE)  # convert lon extent from (-180,180) to (0,360)
     }
     
+    # Average NPP over Z-dimension
+    if (variable == 'nppv') {
+      r <- mean(r, na.rm = TRUE)
+    }
+    
     # Resample raster by template
     r2 <- resample(r, template)  
     time(r2) <- NULL  #prevent creation of aux.json files (associated w/ times or units)
@@ -91,6 +96,11 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
     message(glue("{infile} doesn't exist"))
   }
   
+  
+  # Create raster for day-of-year
+  doy <- template
+  doy[] <- yday(get_date)
+  writeRaster(doy, glue("{outdir}/day_{get_date}.tiff"), overwrite = TRUE)
   
 }
 

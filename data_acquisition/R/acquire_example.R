@@ -1,12 +1,21 @@
 
 ### Example script for downloading environmental data ###
 
+library(glue)
+library(terra)
+library(tidyverse)  ## 2.0.0
+library(sf)
+library(ncdf4) ## needed to interact with ROMS THREDDS server - rast() doesn't work
+library(httr)  ## to use GET command for downloading ERDDAP data
+
+source("data_acquisition/R/acquire_utils.R")
+
+
 # path <- "/Users/heatherwelch/Dropbox/Josh/Openscapes/github/CEG_operationalization" ## no more separate source_path... scripts + products in one repo
 # path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
 path_copernicus_marine_toolbox = "~/miniconda3/envs/copernicusmarine/bin/copernicusmarine"
 
-source("load_libs.R")
-source("data_acquisition/R/acquire_utils.R")
+
 
 # Load metadata
 meta <- read_csv("docs/model_metadata.csv")
@@ -15,7 +24,7 @@ ncdir_erddap = "data_acquisition/netcdfs/erddap_ncdfs"
 ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
 ncdir_roms = "data_acquisition/netcdfs/roms_ncdfs"
 
-get_date = "2024-10-02" 
+get_date = "2024-11-08" 
 # when this script is operational, I think we'll want it to check for new envt data each day from launch day to sys.date (similar to the OPC tool)
 # so that it's always trying to backfill missing envt data
 
@@ -74,7 +83,7 @@ tryCatch(
   expr ={
     
     # Download netCDF files if available
-    purrr::map(cmems_product_list,
+    purrr::map(cmems_product_list[2],
                ~download_cmems(path_copernicus_marine_toolbox,
                                ncdir_cmems,
                                .x$product, 
