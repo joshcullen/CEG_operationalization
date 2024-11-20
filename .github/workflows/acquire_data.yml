@@ -29,7 +29,7 @@ jobs:
         python-version: 3.12
 
     - name: Test that Conda is installed
-        shell: bash -el {0}
-        run: |
-          conda info
-          conda list
+      shell: bash -el {0}
+      run: |
+        conda info
+        conda list
