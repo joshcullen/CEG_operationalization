@@ -1,0 +1,35 @@
+
+name: Download CMEMS data
+
+on:
+  # triggered on push to repo
+  push:
+    branches: main
+  # triggered by cron job
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # https://crontab.cronhub.io
+    - cron:  '30 15 * * *'  #scheduled to run at 3:30 pm UTC every day
+  # triggered by manual activation on GitHub repo website
+  workflow_dispatch:
+
+jobs:
+  acquire-data:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Install Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: 3.12
+
+    - name: Test that Conda is installed
+        shell: bash -el {0}
+        run: |
+          conda info
+          conda list
