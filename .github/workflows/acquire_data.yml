@@ -47,12 +47,12 @@ jobs:
 
     - name: Install R packages
       uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::dplyr
-            any::readr
-            any::purrr
-            any::glue
+      with:
+        packages: |
+          any::dplyr
+          any::readr
+          any::purrr
+          any::glue
 
     - name: Download CMEMS data
       run: |
