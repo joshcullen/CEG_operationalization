@@ -63,10 +63,10 @@ jobs:
     - name: Download CMEMS data
       shell: bash -el {0}
       run: |
-        copernicusmarine subset -i cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D \\
-                  -t 2024-11-13 -T 2024-11-13 \\
-                  -z 0. -Z 0. \\
-                  --variable vgosa \\
+        copernicusmarine subset -i cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D \
+                  -t 2024-11-13 -T 2024-11-13 \
+                  -z 0. -Z 0. \
+                  --variable vgosa \
                   -o data_acquisition/netcdfs/cmems_ncdfs -f test_ugosa_2024-11-13 --force-download
       working-directory: ${{ github.workspace }}
 
