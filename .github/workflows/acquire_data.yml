@@ -39,7 +39,7 @@ jobs:
       run: |
         conda install -c conda-forge copernicusmarine
         conda activate test
-        whereis copernicusmarine
+        copernicusmarine describe
 
     # - name: Install R
     #   uses: r-lib/actions/setup-r@v2
