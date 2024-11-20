@@ -38,7 +38,7 @@ jobs:
       shell: bash -el {0}
       run: |
         conda install -c conda-forge copernicusmarine
-        copernicusmarine -V
+        conda activate copernicusmarine
 
     # - name: Install R
     #   uses: r-lib/actions/setup-r@v2
