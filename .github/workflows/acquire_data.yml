@@ -39,7 +39,6 @@ jobs:
       run: |
         conda install -c conda-forge copernicusmarine
         conda activate test
-        copernicusmarine describe
 
     # - name: Install R
     #   uses: r-lib/actions/setup-r@v2
@@ -61,6 +60,9 @@ jobs:
     #   working-directory: ${{ github.workspace }}
 
     - name: Download CMEMS data
+      env:
+        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
       shell: bash -el {0}
       run: |
         copernicusmarine subset -i cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D \
