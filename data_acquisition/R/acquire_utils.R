@@ -43,10 +43,10 @@ download_cmems = function(path_copernicus_marine_toolbox, ncdir_cmems, product_c
                           var_depth_max) {
 
   # Write code from copernicusmarine via CLI
-  command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} \
-                  -t {get_date} -T {get_date} \
-                  -z {var_depth_min}. -Z {var_depth_max}. \
-                  --variable {variable_cmems} \
+  command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} \\
+                  -t {get_date} -T {get_date} \\
+                  -z {var_depth_min}. -Z {var_depth_max}. \\
+                  --variable {variable_cmems} \\
                   -o {ncdir_cmems} -f {savename_cmems} --force-download")
 
   # Run command
