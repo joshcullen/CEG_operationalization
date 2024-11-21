@@ -39,7 +39,6 @@ jobs:
       run: |
         conda install -c conda-forge copernicusmarine
         conda install scipy
-        conda activate test
 
     - name: Install R
       uses: r-lib/actions/setup-r@v2
