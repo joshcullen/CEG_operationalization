@@ -46,7 +46,7 @@ tryCatch(
   expr ={
 
     # Download netCDF files if available
-    purrr::map(cmems_product_list[4],
+    purrr::map(cmems_product_list[8],
                ~download_cmems("copernicusmarine",
                                ncdir_cmems,
                                .x$product,

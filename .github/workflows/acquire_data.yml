@@ -41,37 +41,41 @@ jobs:
         conda install scipy
         conda activate test
 
-    # - name: Install R
-    #   uses: r-lib/actions/setup-r@v2
-    #   with:
-    #     r-version: '4.3.1'
-    #
-    # - name: Install R packages
-    #   uses: r-lib/actions/setup-r-dependencies@v2
-    #   with:
-    #     packages: |
-    #       any::dplyr
-    #       any::readr
-    #       any::purrr
-    #       any::glue
-    #
-    # - name: Download CMEMS data
-    #   run: |
-    #     Rscript "data_acquisition/R/GHA_acquire_example.R"
-    #   working-directory: ${{ github.workspace }}
+    - name: Install R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.3.1'
+
+    - name: Install R packages
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        packages: |
+          any::dplyr
+          any::readr
+          any::purrr
+          any::glue
 
     - name: Download CMEMS data
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-      shell: bash -el {0}
+      shell: Rscript {0}
       run: |
-        copernicusmarine subset -i cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D \
-                  -t 2024-11-13 -T 2024-11-13 \
-                  -z 0. -Z 0. \
-                  --variable vgosa \
-                  -o data_acquisition/netcdfs/cmems_ncdfs -f test_ugosa_2024-11-13 --force-download
+        source("data_acquisition/R/GHA_acquire_example.R")
       working-directory: ${{ github.workspace }}
+
+    # - name: Download CMEMS data
+    #   env:
+    #     COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+    #     COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+    #   shell: bash -el {0}
+    #   run: |
+    #     copernicusmarine subset -i cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D \
+    #               -t 2024-11-13 -T 2024-11-13 \
+    #               -z 0. -Z 0. \
+    #               --variable vgosa \
+    #               -o data_acquisition/netcdfs/cmems_ncdfs -f test_ugosa_2024-11-13 --force-download
+    #   working-directory: ${{ github.workspace }}
 
     - name: Commit and Push Changes
       run: |
