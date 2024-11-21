@@ -50,7 +50,7 @@ download_cmems = function(path_copernicus_marine_toolbox, ncdir_cmems, product_c
                   -o {ncdir_cmems} -f {savename_cmems} --force-download")
 
   # Run command
-  system2(command)
+  system(command)
 
 
 
