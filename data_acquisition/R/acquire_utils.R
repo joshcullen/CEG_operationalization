@@ -79,20 +79,21 @@ download_roms = function(ncdir_roms, variable_roms, savename_roms, get_date) {
   my_url <- glue("/vsicurl/https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_derived_vars/fmrc/CCSRA_2016a_Phys_ROMS_Derived_Variables_Aggregation_best.ncd?{variable_roms}%5B{days}:1:{days}%5D%5B0:1:180%5D%5B0:1:185%5D,lat_rho%5B0:1:180%5D%5B0:1:185%5D,lon_rho%5B0:1:180%5D%5B0:1:185%5D,time%5B0:1:1%5D")
 
   # Download data and open as R object
-  nc.data <- nc_open(my_url)
+  # nc.data <- nc_open(my_url)
+  roms_ras <- rast(my_url)
 
-  lat <- ncvar_get(nc.data, 'lat_rho') %>%
-    as.numeric()
-  lon <- ncvar_get(nc.data, 'lon_rho') %>%
-    as.numeric()
-  var <- ncvar_get(nc.data, variable_roms) %>%
-    as.numeric()
-
-  # Transform into {terra} SpatRaster object
-  roms_df <- data.frame(x = lon,
-                        y = lat,
-                        z = var)
-  roms_ras <- rast(roms_df, type = "xyz", crs = "+proj=longlat +ellips=WGS84")
+  # lat <- ncvar_get(nc.data, 'lat_rho') %>%
+  #   as.numeric()
+  # lon <- ncvar_get(nc.data, 'lon_rho') %>%
+  #   as.numeric()
+  # var <- ncvar_get(nc.data, variable_roms) %>%
+  #   as.numeric()
+  #
+  # # Transform into {terra} SpatRaster object
+  # roms_df <- data.frame(x = lon,
+  #                       y = lat,
+  #                       z = var)
+  # roms_ras <- rast(roms_df, type = "xyz", crs = "+proj=longlat +ellips=WGS84")
 
   # Export as netCDF file
   writeCDF(roms_ras, glue("{ncdir_roms}/{savename_roms}.nc"), varname = variable_roms, overwrite = TRUE)
