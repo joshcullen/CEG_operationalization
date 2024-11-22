@@ -24,7 +24,7 @@ ncdir_erddap = "data_acquisition/netcdfs/erddap_ncdfs"
 ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
 ncdir_roms = "data_acquisition/netcdfs/roms_ncdfs"
 
-get_date = "2024-11-08" 
+get_date = "2024-11-08"
 # when this script is operational, I think we'll want it to check for new envt data each day from launch day to sys.date (similar to the OPC tool)
 # so that it's always trying to backfill missing envt data
 
@@ -58,9 +58,9 @@ if (!http_error(url_erddap)) {
 ###############
 
 # Define CMEMS metadata object
-meta_cmems <- meta |> 
+meta_cmems <- meta |>
   filter(data_type == 'CMEMS',
-         category != 'derived' | is.na(category)) |> 
+         category != 'derived' | is.na(category)) |>
   mutate(var_depth_min = case_when(variable != 'o2' ~ 0,
                                    TRUE ~ 200),
          var_depth_max = case_when(variable %in% c('analysed_sst','CHL','mlotst') ~ 0,
@@ -68,25 +68,19 @@ meta_cmems <- meta |>
 
 
 # Transform to list and add exported file names
-cmems_product_list <- meta_cmems |> 
-  split(~variable) |> 
-  map_depth(.depth = 1,
-            .f = function(z) {
-              z$savename <- glue("{z$product}_{z$variable}_{get_date}")
-              
-              return(z)
-              }
-            )
+cmems_product_list <- meta_cmems |>
+  mutate(savename = glue("{product}_{variable}_{get_date}")) |>
+  split(~variable)
 
 
 tryCatch(
   expr ={
-    
+
     # Download netCDF files if available
-    purrr::map(cmems_product_list[2],
+    purrr::map(cmems_product_list,
                ~download_cmems(path_copernicus_marine_toolbox,
                                ncdir_cmems,
-                               .x$product, 
+                               .x$product,
                                .x$variable,
                                .x$savename,
                                get_date,
@@ -108,21 +102,15 @@ error = function(e){
 ##############
 
 # Define ROMS metadata object
-meta_roms <- meta |> 
+meta_roms <- meta |>
   filter(data_type == 'ROMS',
          category != 'derived')
 
 
 # Transform to list and add exported file names
-roms_product_list <- meta_roms |> 
-  split(~variable) |> 
-  map_depth(.depth = 1,
-            .f = function(z) {
-              z$savename <- glue("roms_{z$variable}_{get_date}")
-              
-              return(z)
-            }
-  )
+roms_product_list <- meta_roms |>
+  mutate(savename = glue("roms_{variable}_{get_date}")) |>
+  split(~variable)
 
 
 tryCatch(

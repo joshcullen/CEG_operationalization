@@ -1,5 +1,5 @@
 
-# Test script for using GitHub Actions workflow
+# Script for downloading CMEMS data using GitHub Actions workflow
 
 library(dplyr)
 library(purrr)
@@ -14,7 +14,6 @@ meta <- read_csv("docs/model_metadata.csv")
 
 # Define output directories
 ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
-ncdir_roms = "data_acquisition/netcdfs/roms_ncdfs"
 
 # Define date of interest
 get_date <- Sys.Date() - 7

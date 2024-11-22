@@ -15,4 +15,5 @@ Imports:
     readr,
     purrr,
     glue,
-    terra
+    terra,
+    ncdf4

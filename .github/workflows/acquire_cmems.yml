@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  acquire-data:
+  acquire-cmems:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -56,7 +56,7 @@ jobs:
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
       shell: Rscript {0}
       run: |
-        source("data_acquisition/R/GHA_acquire_example.R")
+        source("data_acquisition/R/acquire_cmems.R")
       working-directory: ${{ github.workspace }}
 
     # - name: Download CMEMS data
