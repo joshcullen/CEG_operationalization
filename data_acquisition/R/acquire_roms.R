@@ -49,7 +49,7 @@ tryCatch(
 
   },
   error = function(e){
-    message(glue("{variable_roms} from ROMS not available {get_date}"))
+    message(glue("Data from ROMS not available {get_date}"))
     print(e)
   }
 )
