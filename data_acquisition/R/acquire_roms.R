@@ -6,6 +6,7 @@ library(purrr)
 library(readr)
 library(lubridate)
 library(glue)
+library(terra)
 library(ncdf4)
 
 source("data_acquisition/R/acquire_utils.R")
