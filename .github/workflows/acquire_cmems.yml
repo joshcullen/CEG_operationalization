@@ -3,8 +3,8 @@ name: Download CMEMS data
 
 on:
   # triggered on push to repo
-  push:
-    branches: main
+  # push:
+  #   branches: main
   # triggered by cron job
   schedule:
     # * is a special character in YAML so you have to quote this string
