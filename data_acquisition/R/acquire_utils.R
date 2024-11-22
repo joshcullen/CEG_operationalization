@@ -76,7 +76,7 @@ download_roms = function(ncdir_roms, variable_roms, savename_roms, get_date) {
   days <- as.numeric(difftime(new_date, ref_date))
 
   # Define url for data download
-  my_url <- glue("https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_derived_vars/fmrc/CCSRA_2016a_Phys_ROMS_Derived_Variables_Aggregation_best.ncd?{variable_roms}[{days}:1:{days}][0:1:180][0:1:185],lat_rho[0:1:180][0:1:185],lon_rho[0:1:180][0:1:185],time[0:1:1]")
+  my_url <- glue("/vsicurl/https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_derived_vars/fmrc/CCSRA_2016a_Phys_ROMS_Derived_Variables_Aggregation_best.ncd?{variable_roms}[{days}:1:{days}][0:1:180][0:1:185],lat_rho[0:1:180][0:1:185],lon_rho[0:1:180][0:1:185],time[0:1:1]")
 
   # Download data and open as R object
   nc.data <- nc_open(my_url)
