@@ -1,48 +1,48 @@
-
-name: Post process cmems data
-
-on:
-  # triggered on push to repo
-  # push:
-  #   branches: main
-  # triggered by cron job
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    # https://crontab.cronhub.io
-    - cron:  '45 15 * * *'  #scheduled to run at 3:45 pm UTC every day
-  # triggered by manual activation on GitHub repo website
-  workflow_dispatch:
-
-jobs:
-  process-data:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
-
-    - name: Install R
-      uses: r-lib/actions/setup-r@v2
-      with:
-        r-version: '4.3.3'
-
-    - name: Install R packages
-      uses: r-lib/actions/setup-r-dependencies@v2
-      with:
-        cache-version: 4
-
-    - name: Post-process CMEMS data
-      shell: Rscript {0}
-      run: |
-        source("data_processing/R/hw_test.R")
-      working-directory: ${{ github.workspace }}
-
-    - name: Commit and Push Changes
-      run: |
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-        git add .
-        git commit -m 'Resampled  CMEMS file'
-        git push
+# 
+# name: Post process cmems data
+# 
+# on:
+#   # triggered on push to repo
+#   # push:
+#   #   branches: main
+#   # triggered by cron job
+#   schedule:
+#     # * is a special character in YAML so you have to quote this string
+#     # https://crontab.cronhub.io
+#     - cron:  '45 15 * * *'  #scheduled to run at 3:45 pm UTC every day
+#   # triggered by manual activation on GitHub repo website
+#   workflow_dispatch:
+# 
+# jobs:
+#   process-data:
+#     runs-on: ubuntu-latest
+#     env:
+#       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+#     steps:
+#     - name: Check out repository
+#       uses: actions/checkout@v4
+# 
+#     - name: Install R
+#       uses: r-lib/actions/setup-r@v2
+#       with:
+#         r-version: '4.3.3'
+# 
+#     - name: Install R packages
+#       uses: r-lib/actions/setup-r-dependencies@v2
+#       with:
+#         cache-version: 4
+# 
+#     - name: Post-process CMEMS data
+#       shell: Rscript {0}
+#       run: |
+#         source("data_processing/R/hw_test.R")
+#       working-directory: ${{ github.workspace }}
+# 
+#     - name: Commit and Push Changes
+#       run: |
+#         git config --global user.name "${{ github.actor }}"
+#         git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+# 
+#         git add .
+#         git commit -m 'Resampled  CMEMS file'
+#         git push
