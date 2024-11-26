@@ -15,15 +15,21 @@ on:
 
 jobs:
   acquire-roms:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
 
-    - name: Install libcurl
-      run: sudo apt-get install libcurl4-openssl-dev
+    - name: Install ubuntu deps
+      run: sudo apt-get install -y --no-install-recommends \
+        git-core \
+        libssl-dev \
+        libcurl4-gnutls-dev \
+        curl \
+        libsodium-dev \
+        libxml2-dev
 
     # - name: Install Conda
     #   uses: conda-incubator/setup-miniconda@v3
