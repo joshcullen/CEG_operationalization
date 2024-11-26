@@ -28,6 +28,11 @@ jobs:
         auto-update-conda: true
         python-version: 3.11
 
+    - name: Update Conda
+      shell: bash -el {0}
+      run: |
+        conda update -n test -c conda-forge conda
+
     # - name: Install R
     #   uses: r-lib/actions/setup-r@v2
     #   with:
