@@ -15,7 +15,7 @@ on:
 
 jobs:
   acquire-roms:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -48,7 +48,7 @@ jobs:
 
     - name: Download ROMS data
       run: |
-        curl -o ./data_acquisition/netcdfs/roms_ncdfs/roms_bbv_2024-11-15.nc https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_derived_vars/fmrc/CCSRA_2016a_Phys_ROMS_Derived_Variables_Aggregation_best.ncd?bbv%5B5066:1:5066%5D%5B0:1:180%5D%5B0:1:185%5D,lat_rho%5B0:1:180%5D%5B0:1:185%5D,lon_rho%5B0:1:180%5D%5B0:1:185%5D,time%5B0:1:1%5D
+        sudo curl -o ./data_acquisition/netcdfs/roms_ncdfs/roms_bbv_2024-11-15.nc https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_derived_vars/fmrc/CCSRA_2016a_Phys_ROMS_Derived_Variables_Aggregation_best.ncd?bbv%5B5066:1:5066%5D%5B0:1:180%5D%5B0:1:185%5D,lat_rho%5B0:1:180%5D%5B0:1:185%5D,lon_rho%5B0:1:180%5D%5B0:1:185%5D,time%5B0:1:1%5D
       working-directory: ${{ github.workspace }}
 
     # - name: Download ROMS data
