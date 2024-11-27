@@ -85,6 +85,12 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
     r2 <- resample(r, template)  
     time(r2) <- NULL  #prevent creation of aux.json files (associated w/ times or units)
     
+    
+    # Remove "no data" values added for sla, ugosa, and vgosa
+    if (variable %in% c('sla','ugosa','vgosa')) {
+      r2[r2 < -1000] <- NA
+    }
+    
     # Smooth over over 5x5 window (1.25 deg) (but not for geostrophic currents)
     if (!variable %in% c('ugosa','vgosa')) {
       
