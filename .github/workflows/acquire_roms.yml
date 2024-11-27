@@ -3,8 +3,8 @@ name: Download ROMS data
 
 on:
   # triggered on push to repo
-  push:
-    branches: main
+  # push:
+  #   branches: main
   # triggered by cron job
   schedule:
     # * is a special character in YAML so you have to quote this string
@@ -22,17 +22,6 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4
 
-    # - name: Install Conda
-    #   uses: conda-incubator/setup-miniconda@v3
-    #   with:
-    #     auto-update-conda: true
-    #     python-version: 3.11
-    # 
-    # - name: Update Conda
-    #   shell: bash -el {0}
-    #   run: |
-    #     conda update -n base -c conda-forge conda
-
     - name: Install R
       uses: r-lib/actions/setup-r@v2
       with:
@@ -42,11 +31,6 @@ jobs:
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         cache-version: 4
-
-    # - name: Download ROMS data
-    #   run: |
-    #     curl -o ./data_acquisition/netcdfs/roms_ncdfs/roms_bbv_2024-11-15.nc https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_derived_vars/fmrc/CCSRA_2016a_Phys_ROMS_Derived_Variables_Aggregation_best.ncd?bbv%5B5066:1:5066%5D%5B0:1:180%5D%5B0:1:185%5D,lat_rho%5B0:1:180%5D%5B0:1:185%5D,lon_rho%5B0:1:180%5D%5B0:1:185%5D,time%5B0:1:1%5D
-    #   working-directory: ${{ github.workspace }}
 
     - name: Download ROMS data
       shell: Rscript {0}
