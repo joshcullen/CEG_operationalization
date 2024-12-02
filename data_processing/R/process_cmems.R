@@ -1,5 +1,5 @@
 
-# Script for downloading CMEMS data using GitHub Actions workflow
+# Script for processing CMEMS data using GitHub Actions workflow
 
 library(glue)
 library(terra)
