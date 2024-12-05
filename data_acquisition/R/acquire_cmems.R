@@ -16,7 +16,7 @@ meta <- read_csv("docs/model_metadata.csv")
 ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
 
 # Define date of interest
-get_date <- Sys.Date() - 7
+get_date <- Sys.Date() - 10
 
 
 

@@ -67,7 +67,8 @@ predict_models = function(dyn_rast_dir, static_rast_dir, savename, get_date, bbo
 predict_models_TopPred = function(rast_stack, bbox, mod) {
   
   # Mask rasters by bbox
-  rast_stack2 <- terra::mask(rast_stack, bbox)
+  rast_stack2 <- terra::mask(rast_stack, bbox) |> 
+    crop(bbox)  #prevent from including full globe for raster extent
   
   # Make prediction
   pred <- predict(object = rast_stack2, model = mod, n.trees = mod$gbm.call$best.trees,
@@ -126,22 +127,27 @@ make_png <- function(pred_rast_dir, get_date, savename, pred_img_dir, tool) {
   pred.df <- as.data.frame(pred, xy = TRUE)
   
   # load spatial layer for country polygons
-  if (tool == 'TopPredatorWatch') {
-    
-    world <- world <- gisco_countries |> 
-      filter(NAME_ENGL != "Antarctica") |> 
-      st_shift_longitude() |>
-      st_crop(xmin = 100, xmax = 280, ymin = -40, ymax = 60) |>
-      st_shift_longitude()
-    
-  } else {
+  # if (tool == 'TopPredatorWatch') {
+  #   
+  #   world <- gisco_countries |> 
+  #     filter(NAME_ENGL != "Antarctica") |> 
+  #     st_shift_longitude() |>
+  #     st_crop(xmin = 100, xmax = 280, ymin = -40, ymax = 60) |>
+  #     st_shift_longitude()
+  #   
+  # } else {
     
     world <- ne_countries(scale = 10,
                           country = c("United States of America","Canada","Mexico"),
                           returnclass = "sf")
     
-  }
+  # }
   
+  
+  # Convert longitude range to [-180,180] for TopPredatorWatch
+  if (tool == 'TopPredatorWatch') {
+    pred.df <- shift_longitude(pred.df, neg_lon = TRUE)
+  }
   
   
   # Create 'nice' names for plot titles
@@ -155,7 +161,8 @@ make_png <- function(pred_rast_dir, get_date, savename, pred_img_dir, tool) {
   
   # Define map extent by tool
   spat_ext <- switch(tool,
-                     "TopPredatorWatch" = c(xmin = 180, xmax = 260, ymin = 10, ymax = 62),
+                     # "TopPredatorWatch" = c(xmin = 180, xmax = 260, ymin = 10, ymax = 62),
+                     "TopPredatorWatch" = c(xmin = -180, xmax = -100, ymin = 10, ymax = 62),
                      
                      "ROMS" = c(xmin = -134, xmax = -115.5, ymin = 30, ymax = 48),
                      
@@ -187,4 +194,42 @@ make_png <- function(pred_rast_dir, get_date, savename, pred_img_dir, tool) {
          stop("Tool must be one of either 'TopPredatorWatch' or 'ROMS'."))
   
   
+}
+
+
+
+
+
+
+#' Function to shift longitude between [-180, 180] range and [0,360] range in a data.frame
+#' 
+#' Additional work would be needed to check for different naming convention, such as uppercase 'x' and 'y', as well as use of 'lon'/'lat' and any similar naming convention.
+#'
+#' @param data A data.frame object minimally including a column named 'x' that holds longitude coordinates.
+#' @param neg_lon A boolean value; select TRUE if wanting to include negative longitude values for Western hemisphere; select FALSE if wanting to switch longitude coordinates to positive values in Western hemisphere.
+#'
+#' @return A data.frame object where the 'x' column for longitude has been shifted based on whether the user prefers a [-180,180] or [0,360] range.
+#' 
+#' @export
+shift_longitude <- function(data, neg_lon) {
+
+  if (neg_lon == FALSE) {
+    
+    # Check which coords need to be flipped
+    data <- data |> 
+      mutate(x = ifelse(x < 0, 360 + x, x))
+    
+  } else if (neg_lon == TRUE) {
+    
+    # Check which coords need to be flipped
+    data <- data |> 
+      mutate(x = ifelse(x > 180, x - 360, x))
+    
+  } else {
+    
+    stop("'neg_lon' must be TRUE or FALSE")
+  }
+  
+  
+  return(data)
 }
