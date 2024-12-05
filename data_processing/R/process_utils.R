@@ -94,6 +94,8 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
     # Smooth over over 5x5 window (1.25 deg) (but not for geostrophic currents)
     if (!variable %in% c('ugosa','vgosa')) {
       
+      units(r2) <- NULL  #need to remove to prevent creation of .aux.json files
+      
       r2_mean <- focal(r2, w = matrix(1, nrow = 5, ncol = 5), fun = mean, na.rm = TRUE)
       writeRaster(r2_mean, glue("{outdir}/{savename}_{get_date}.tiff"), overwrite = TRUE)
       

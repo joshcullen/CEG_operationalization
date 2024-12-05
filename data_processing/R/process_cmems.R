@@ -30,9 +30,6 @@ template_TopPred <- rast("data_processing/TopPredatorWatch/static/template.tiff"
 ### Process and resample data for Top Predator Watch ###
 ########################################################
 
-# To prevent writing aux files
-setGDALconfig("GDAL_PAM_ENABLED", "FALSE")
-
 # Prepare metadata info for I/O
 meta_TopPred <- meta |> 
   filter(data_type == 'CMEMS',
