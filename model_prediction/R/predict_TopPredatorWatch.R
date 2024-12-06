@@ -26,7 +26,7 @@ pred_img_dir_TopPred <- glue("{pred_dir_TopPred}/img")  #dir of prediction as im
 
 
 # Define date of interest
-get_date <- Sys.Date() - 10
+get_date <- Sys.Date() - 11
 
 
 

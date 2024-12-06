@@ -19,7 +19,7 @@ ncdir_TopPred <- "data_acquisition/netcdfs/cmems_ncdfs"
 outdir_TopPred <- "data_processing/TopPredatorWatch/rasters"
 
 # Define date of interest
-get_date <- Sys.Date() - 10
+get_date <- Sys.Date() - 11
 
 # Define raster template
 template_TopPred <- rast("data_processing/TopPredatorWatch/static/template.tiff")
