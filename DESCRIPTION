@@ -24,4 +24,5 @@ Imports:
     sf,
     gbm,
     rnaturalearth,
-    pals
+    pals,
+    remotes
