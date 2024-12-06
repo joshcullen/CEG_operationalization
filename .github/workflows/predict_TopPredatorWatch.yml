@@ -37,6 +37,12 @@ jobs:
       with:
         cache-version: 4
 
+    - name: Install rnaturalearthhires R package from GitHub
+      shell: Rscript {0}
+      run: |
+        install.packages("devtools")
+        devtools::install_github("ropensci/rnaturalearthhires")
+
     - name: Make predictions for Top Predator Watch
       shell: Rscript {0}
       run: |
