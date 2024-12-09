@@ -16,9 +16,9 @@ Other,lunar,,Other,lunar,derived,ROMS_lbst
 ROMS,EKE,,ROMS,EKE,derived,ROMS_lbst
 METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2,analysed_sst,,CMEMS,sst,raw,TopPred_lbst
 cmems_mod_glo_bgc-bio_anfc_0.25deg_P1D-m,nppv,,CMEMS,PPupper200m,raw,TopPred_lbst
-cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D,sla,,CMEMS,sla,raw,TopPred_lbst
-cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D,ugosa,,CMEMS,,,TopPred_lbst
-cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D,vgosa,,CMEMS,,,TopPred_lbst
+cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D,sla,,CMEMS,sla,raw,TopPred_lbst
+cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D,ugosa,,CMEMS,,,TopPred_lbst
+cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D,vgosa,,CMEMS,,,TopPred_lbst
 cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D,CHL,,CMEMS,l.chl,raw,TopPred_lbst
 cmems_mod_glo_phy_anfc_0.083deg_P1D-m,mlotst,,CMEMS,mld,raw,TopPred_lbst
 cmems_mod_glo_bgc-bio_anfc_0.25deg_P1D-m,o2,,CMEMS,oxy200m,raw,TopPred_lbst
