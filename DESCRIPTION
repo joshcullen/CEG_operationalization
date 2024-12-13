@@ -25,4 +25,5 @@ Imports:
     gbm,
     rnaturalearth,
     pals,
-    remotes
+    remotes,
+    httr
