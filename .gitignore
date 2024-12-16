@@ -40,5 +40,6 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# Webpage docs
-
+# Raw and intermediate raster files
+data_acquisition/netcdfs/*/*.nc
+data_processing/*/rasters/*.tiff
