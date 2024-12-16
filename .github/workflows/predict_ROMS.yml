@@ -42,7 +42,7 @@ jobs:
       run: |
         remotes::install_github("ropensci/rnaturalearthhires")
 
-    - name: Make predictions for Top Predator Watch
+    - name: Make predictions for ROMS tool
       shell: Rscript {0}
       run: |
         source("model_prediction/R/predict_ROMS.R")
