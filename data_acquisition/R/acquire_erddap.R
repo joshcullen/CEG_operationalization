@@ -17,7 +17,7 @@ source("data_acquisition/R/acquire_utils.R")
 ncdir_erddap = "data_acquisition/netcdfs/erddap_ncdfs"
 
 # Define date of interest
-get_date <- Sys.Date() - 7
+get_date <- Sys.Date() - 6
 
 
 
