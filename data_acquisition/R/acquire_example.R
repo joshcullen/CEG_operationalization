@@ -13,7 +13,7 @@ source("data_acquisition/R/acquire_utils.R")
 
 # path <- "/Users/heatherwelch/Dropbox/Josh/Openscapes/github/CEG_operationalization" ## no more separate source_path... scripts + products in one repo
 # path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
-path_copernicus_marine_toolbox = "~/miniconda3/envs/copernicusmarine/bin/copernicusmarine"
+# path_copernicus_marine_toolbox = "~/miniconda3/envs/copernicusmarine/bin/copernicusmarine"
 
 
 
@@ -78,7 +78,8 @@ tryCatch(
 
     # Download netCDF files if available
     purrr::map(cmems_product_list,
-               ~download_cmems(ncdir_cmems,
+               ~download_cmems("copernicusmarine",
+                               ncdir_cmems,
                                .x$product,
                                .x$variable,
                                .x$savename,
