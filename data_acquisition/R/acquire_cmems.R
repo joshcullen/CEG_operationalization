@@ -46,8 +46,7 @@ tryCatch(
 
     # Download netCDF files if available
     purrr::map(cmems_product_list,
-               ~download_cmems("/usr/share/miniconda/envs/test/bin/copernicusmarine",
-                               ncdir_cmems,
+               ~download_cmems(ncdir_cmems,
                                .x$product,
                                .x$variable,
                                .x$savename,

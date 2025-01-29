@@ -26,7 +26,6 @@ download_erddap = function(ncdir_erddap, url_erddap, variable_erddap, savename_e
 #'
 #' Download data as netCDF file from the CMEMS server given url and variable name.
 #'
-#' @param path_copernicus_marine_toolbox File path to locally stored version of Copernicus Marine Toolbox.
 #' @param ncdir_cmems Directory to which netCDF files are saved.
 #' @param product_cmems Product name of interest from CMEMS.
 #' @param variable_cmems Variable name of interest from relevant CMEMS product.
@@ -38,17 +37,17 @@ download_erddap = function(ncdir_erddap, url_erddap, variable_erddap, savename_e
 #' @return A netCDF file for relevant data is downloaded locally to the directories specified in the function.
 #'
 #' @export
-download_cmems = function(path_copernicus_marine_toolbox, ncdir_cmems, product_cmems,
+download_cmems = function(ncdir_cmems, product_cmems,
                           variable_cmems, savename_cmems, get_date, var_depth_min,
                           var_depth_max) {
 
   # Write code from copernicusmarine via CLI
-  command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} \\
+  command <- glue("copernicusmarine subset -i {product_cmems} \\
                   -x 100.0 -X 295.0 -y -60.0 -Y 60.0 \\
                   -t {get_date} -T {get_date} \\
                   -z {var_depth_min}. -Z {var_depth_max}. \\
                   --variable {variable_cmems} \\
-                  -o {ncdir_cmems} -f {savename_cmems} --force-download")
+                  -o {ncdir_cmems} -f {savename_cmems}")
 
   # Run command
   system(command)
