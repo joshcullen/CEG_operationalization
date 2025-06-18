@@ -1,0 +1,85 @@
+[
+  {
+    "objectID": "lbst_cmems.html",
+    "href": "lbst_cmems.html",
+    "title": "Leatherback CMEMS model",
+    "section": "",
+    "text": "The most recent map products from the model are shown below, in addition to an interactive map of the latest prediction.",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback CMEMS model"
+    ]
+  },
+  {
+    "objectID": "lbst_cmems.html#map-products",
+    "href": "lbst_cmems.html#map-products",
+    "title": "Leatherback CMEMS model",
+    "section": "Map Products",
+    "text": "Map Products\n\n\nCode\nlibrary(bslib)\nlibrary(htmltools)\n\nnavset_card_underline(\n  nav_panel(title = \"Latest\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2024-11-25.png?raw=true\")),\n  nav_panel(title = \"Yesterday\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2024-11-08.png?raw=true\")),\n  nav_panel(title = \"Day before yesterday\", p(\"Add content\"))\n)\n\n\n\n\n\n\nLatest\n\n\nYesterday\n\n\nDay before yesterday\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdd content",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback CMEMS model"
+    ]
+  },
+  {
+    "objectID": "lbst_cmems.html#interactive-map",
+    "href": "lbst_cmems.html#interactive-map",
+    "title": "Leatherback CMEMS model",
+    "section": "Interactive Map",
+    "text": "Interactive Map\nThis example only shows prediction for 2024-11-24, but we could potentially make some adjustments to allow selection of one of dates shown above (or more).\n\n\nCode\nlibrary(leaflet)\nlibrary(leafem)\nlibrary(terra)\n\n\n# Read sea surface temperature layer from NOAA THREDDS server (using data from 1 Jan 2025)\nr &lt;- rast(\"https://raw.githubusercontent.com/joshcullen/CEG_operationalization/refs/heads/main/model_prediction/TopPredatorWatch/rasters/pred_2024-11-25_leatherbackTurtle.tiff\")\nr &lt;- r |&gt; \n  project('EPSG:3857')\n\n# Define color palette for raster layer\npal &lt;- colorNumeric(\"inferno\", domain = values(r), na.color = \"transparent\")\n\nleaflet() |&gt; \n  addProviderTiles(provider = providers$CartoDB.DarkMatter, group = \"CartoDB\") |&gt; \n  addLayersControl(position = \"topright\",\n                   baseGroups = \"CartoDB\",\n                   overlayGroups = \"HSI\") |&gt; \n  addRasterImage(r, colors = pal, opacity = 0.8, group = \"HSI\", layerId = \"HSI\") |&gt; \n  addImageQuery(r, layerId = \"HSI\") |&gt;  #add raster  query\n  addLegend(title = \"Habitat Suitability\", position = \"bottomright\", pal = pal, values = values(r))",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback CMEMS model"
+    ]
+  },
+  {
+    "objectID": "leatherback.html",
+    "href": "leatherback.html",
+    "title": "Leatherback DOM tools",
+    "section": "",
+    "text": "As an endangered species, leatherback turtles are protected under the Endangered Species Act, which also frequently their consideration in fisheries management plans. Given the ubiquity of this consideration for a number of West Coast fisheries, a number of different species distribution models have been built to predict where these turtles are likely to occur in near-real time. This webpage includes a couple examples of models included in Welch et al (2023) and in Lezama-Ochoa (in press) based on two different environmental datasets: Copernicus Marine Environmental Monitoring Service (CMEMS) and Regional Ocean Modeling System.\n\nCMEMS\n\n\nBased on one set of selected environmental covariates from CMEMS, this model was used within a set of other SDMs for top predators to determine shifting distributions related to marine heatwaves. Models were fitted using a Boosted Regression Tree and are predicted for the US West Coast. The most recent map product can be found to the right of this text.\nLearn more about these models here and explore the model predictions here.\n\n\n\n\n\n\n\n\n\n\nROMS\n\n\nThis model is very similar to that of the other model developed as part of Top Predator Watch, but relies on a slightly different set of environmental variables using a different data assimilative model specific to the US West Coast. The mapped prediction from this model can be seen to the right of this text.\nExplore the model predictions here.",
+    "crumbs": [
+      "Leatherback Sea Turtle"
+    ]
+  },
+  {
+    "objectID": "lbst_roms.html",
+    "href": "lbst_roms.html",
+    "title": "Leatherback ROMS model",
+    "section": "",
+    "text": "The most recent map products from the model are shown below, in addition to an interactive map of the latest prediction.",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback ROMS model"
+    ]
+  },
+  {
+    "objectID": "lbst_roms.html#map-products",
+    "href": "lbst_roms.html#map-products",
+    "title": "Leatherback ROMS model",
+    "section": "Map Products",
+    "text": "Map Products\n\n\nCode\nlibrary(bslib)\nlibrary(htmltools)\n\n# navset_card_underline(\n#   nav_panel(title = \"Latest\", img(src = \"https://oceanview.pfeg.noaa.gov/WhaleWatch2/latest/blwh_flyer_latest.png\")),\n#   nav_panel(title = \"Yesterday\", img(src = \"https://oceanview.pfeg.noaa.gov/WhaleWatch2/latest_week/blwh_flyer_latest_2.png\")),\n#   nav_panel(title = \"Day before yesterday\", p(\"Add content\"), fill = TRUE)\n# )\n\nnavset_card_underline(\n  nav_panel(title = \"Latest\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2024-11-24.png?raw=true\")),\n  nav_panel(title = \"Yesterday\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2024-11-08.png?raw=true\")),\n  nav_panel(title = \"Day before yesterday\", p(\"Add content\"))\n)\n\n\n\n\n\n\nLatest\n\n\nYesterday\n\n\nDay before yesterday\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdd content",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback ROMS model"
+    ]
+  },
+  {
+    "objectID": "lbst_roms.html#interactive-map",
+    "href": "lbst_roms.html#interactive-map",
+    "title": "Leatherback ROMS model",
+    "section": "Interactive Map",
+    "text": "Interactive Map\nThis example only shows prediction for 2024-11-24, but we could potentially make some adjustments to allow selection of one of dates shown above (or more).\n\n\nCode\nlibrary(leaflet)\nlibrary(leafem)\nlibrary(terra)\n\n\n# Read sea surface temperature layer from NOAA THREDDS server (using data from 1 Jan 2025)\nr &lt;- rast(\"https://raw.githubusercontent.com/joshcullen/CEG_operationalization/refs/heads/main/model_prediction/ROMS/rasters/pred_2024-11-24_leatherbackTurtle.tiff\")\n\n# Define color palette for raster layer\npal &lt;- colorNumeric(\"inferno\", domain = values(r), na.color = \"transparent\")\n\nleaflet() |&gt; \n  addProviderTiles(provider = providers$CartoDB.DarkMatter, group = \"CartoDB\") |&gt; \n  addLayersControl(position = \"topright\",\n                   baseGroups = \"CartoDB\",\n                   overlayGroups = \"HSI\") |&gt; \n  addRasterImage(r, colors = pal, opacity = 0.8, group = \"HSI\", layerId = \"HSI\") |&gt; \n  addImageQuery(r, layerId = \"HSI\") |&gt;  #add raster  query\n  addLegend(title = \"Habitat Suitability\", position = \"bottomright\", pal = pal, values = values(r))",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback ROMS model"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DOM Tools",
+    "section": "",
+    "text": "DOM Tools\nThis webpage contains products from a set of DOM tools that are used to predict the distribution of leatherback turtles (Dermochelys coriacea) along the US West Coast. While tools for other species exist, they have not yet been included here. This webpage serves as a proof-of-concept platform to demonstrate how the use of features from GitHub (such as GitHub Actions for operationalization and GitHub pages for website hosting) can be used to deploy and maintain DOM tools using freely available cloud services.\nDirect any questions or feedback through to jacullen@ucsc.edu, or add a GitHub Issue."
+  }
+]
