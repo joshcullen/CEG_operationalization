@@ -15,7 +15,7 @@
     "href": "lbst_cmems.html#map-products",
     "title": "Leatherback CMEMS model",
     "section": "Map Products",
-    "text": "Map Products\n\n\nCode\nlibrary(bslib)\nlibrary(htmltools)\n\nnavset_card_underline(\n  nav_panel(title = \"Latest\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2024-11-25.png?raw=true\")),\n  nav_panel(title = \"Yesterday\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2024-11-08.png?raw=true\")),\n  nav_panel(title = \"Day before yesterday\", p(\"Add content\"))\n)\n\n\n\n\n\n\nLatest\n\n\nYesterday\n\n\nDay before yesterday\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdd content",
+    "text": "Map Products\n\n\n\n\n\n\nLatest\n\n\nYesterday\n\n\nDay before yesterday\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdd content",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback CMEMS model"
@@ -26,7 +26,7 @@
     "href": "lbst_cmems.html#interactive-map",
     "title": "Leatherback CMEMS model",
     "section": "Interactive Map",
-    "text": "Interactive Map\nThis example only shows prediction for 2024-11-24, but we could potentially make some adjustments to allow selection of one of dates shown above (or more).\n\n\nCode\nlibrary(leaflet)\nlibrary(leafem)\nlibrary(terra)\n\n\n# Read sea surface temperature layer from NOAA THREDDS server (using data from 1 Jan 2025)\nr &lt;- rast(\"https://raw.githubusercontent.com/joshcullen/CEG_operationalization/refs/heads/main/model_prediction/TopPredatorWatch/rasters/pred_2024-11-25_leatherbackTurtle.tiff\")\nr &lt;- r |&gt; \n  project('EPSG:3857')\n\n# Define color palette for raster layer\npal &lt;- colorNumeric(\"inferno\", domain = values(r), na.color = \"transparent\")\n\nleaflet() |&gt; \n  addProviderTiles(provider = providers$CartoDB.DarkMatter, group = \"CartoDB\") |&gt; \n  addLayersControl(position = \"topright\",\n                   baseGroups = \"CartoDB\",\n                   overlayGroups = \"HSI\") |&gt; \n  addRasterImage(r, colors = pal, opacity = 0.8, group = \"HSI\", layerId = \"HSI\") |&gt; \n  addImageQuery(r, layerId = \"HSI\") |&gt;  #add raster  query\n  addLegend(title = \"Habitat Suitability\", position = \"bottomright\", pal = pal, values = values(r))",
+    "text": "Interactive Map\nThis example only shows prediction for 2024-11-24, but we could potentially make some adjustments to allow selection of one of dates shown above (or more).",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback CMEMS model"
@@ -58,7 +58,7 @@
     "href": "lbst_roms.html#map-products",
     "title": "Leatherback ROMS model",
     "section": "Map Products",
-    "text": "Map Products\n\n\nCode\nlibrary(bslib)\nlibrary(htmltools)\n\n# navset_card_underline(\n#   nav_panel(title = \"Latest\", img(src = \"https://oceanview.pfeg.noaa.gov/WhaleWatch2/latest/blwh_flyer_latest.png\")),\n#   nav_panel(title = \"Yesterday\", img(src = \"https://oceanview.pfeg.noaa.gov/WhaleWatch2/latest_week/blwh_flyer_latest_2.png\")),\n#   nav_panel(title = \"Day before yesterday\", p(\"Add content\"), fill = TRUE)\n# )\n\nnavset_card_underline(\n  nav_panel(title = \"Latest\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2024-11-24.png?raw=true\")),\n  nav_panel(title = \"Yesterday\", img(src = \"https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2024-11-08.png?raw=true\")),\n  nav_panel(title = \"Day before yesterday\", p(\"Add content\"))\n)\n\n\n\n\n\n\nLatest\n\n\nYesterday\n\n\nDay before yesterday\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdd content",
+    "text": "Map Products\n\n\n\n\n\n\nLatest\n\n\nYesterday\n\n\nDay before yesterday\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdd content",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback ROMS model"
@@ -69,7 +69,7 @@
     "href": "lbst_roms.html#interactive-map",
     "title": "Leatherback ROMS model",
     "section": "Interactive Map",
-    "text": "Interactive Map\nThis example only shows prediction for 2024-11-24, but we could potentially make some adjustments to allow selection of one of dates shown above (or more).\n\n\nCode\nlibrary(leaflet)\nlibrary(leafem)\nlibrary(terra)\n\n\n# Read sea surface temperature layer from NOAA THREDDS server (using data from 1 Jan 2025)\nr &lt;- rast(\"https://raw.githubusercontent.com/joshcullen/CEG_operationalization/refs/heads/main/model_prediction/ROMS/rasters/pred_2024-11-24_leatherbackTurtle.tiff\")\n\n# Define color palette for raster layer\npal &lt;- colorNumeric(\"inferno\", domain = values(r), na.color = \"transparent\")\n\nleaflet() |&gt; \n  addProviderTiles(provider = providers$CartoDB.DarkMatter, group = \"CartoDB\") |&gt; \n  addLayersControl(position = \"topright\",\n                   baseGroups = \"CartoDB\",\n                   overlayGroups = \"HSI\") |&gt; \n  addRasterImage(r, colors = pal, opacity = 0.8, group = \"HSI\", layerId = \"HSI\") |&gt; \n  addImageQuery(r, layerId = \"HSI\") |&gt;  #add raster  query\n  addLegend(title = \"Habitat Suitability\", position = \"bottomright\", pal = pal, values = values(r))",
+    "text": "Interactive Map\nThis example only shows prediction for 2024-11-24, but we could potentially make some adjustments to allow selection of one of dates shown above (or more).",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback ROMS model"
