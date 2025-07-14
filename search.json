@@ -33,6 +33,17 @@
     ]
   },
   {
+    "objectID": "lbst_cmems.html#download-map-products-and-raster-layers",
+    "href": "lbst_cmems.html#download-map-products-and-raster-layers",
+    "title": "Leatherback CMEMS model",
+    "section": "Download Map Products and Raster Layers",
+    "text": "Download Map Products and Raster Layers\n\nFrom website\n\nStart Date: \nEnd Date: \nDownload products Download rasters\n\n\n\n\n\n\n\n\n\n\n\nDownloading files…\n\n\n\n\n\n\n\n\n\nFrom GitHub\nClone the repository: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository\n\n\nFrom R\n\nlibrary(curl)\nlibrary(httr)\nlibrary(tidyverse)\nlibrary(glue)\n\ndownload_rasters_git = function(save_dir, start_date, end_date){\n  \n  # Find files from repo folder\n  prods &lt;- httr::GET(\"https://api.github.com/repos/joshcullen/CEG_operationalization/contents/model_prediction/TopPredatorWatch/rasters\")\n  httr::stop_for_status(prods)  #check to make sure no errors w/ request (should return nothing to console if working properly)\n  filelist &lt;- unlist(lapply(content(prods), \"[\", \"name\"), use.names = F)\n  prod_df &lt;- data.frame(files = filelist,\n                        date = gsub(\"^[A-Za-z]+\\\\_|\\\\.tiff$\", \"\", filelist) |&gt; \n                          as.Date()\n  )\n  \n  # Filter files by date range\n  prod_filt &lt;- prod_df |&gt; \n    filter(date &gt;= as.Date(start_date),\n           date &lt;= as.Date(end_date)) |&gt; \n    pull(files)\n  \n  git_url &lt;- glue(\"https://raw.githubusercontent.com/joshcullen/CEG_operationalization/main/model_prediction/TopPredatorWatch/rasters/{prod_filt}\")\n  file_dest &lt;- glue(\"{save_dir}/{prod_filt}\")\n  \n  curl::multi_download(urls = git_url, destfiles = file_dest)\n}\n\n# Download files\ndownload_rasters_git(save_dir = \"~/Downloads\", start_date = \"2025-06-25\", end_date = \"2025-06-30\")",
+    "crumbs": [
+      "Leatherback Sea Turtle",
+      "Leatherback CMEMS model"
+    ]
+  },
+  {
     "objectID": "leatherback.html",
     "href": "leatherback.html",
     "title": "Leatherback DOM tools",
@@ -47,7 +58,7 @@
     "href": "lbst_roms.html",
     "title": "Leatherback ROMS model",
     "section": "",
-    "text": "The most recent map products from the model are shown below, in addition to an interactive map of the latest prediction.\nStatus of environmental products from ROMS:\nROMS THREDDS server\nROMS has been down for 16 days",
+    "text": "The most recent map products from the model are shown below, in addition to an interactive map of the latest prediction.\nStatus of environmental products from ROMS:\nROMS THREDDS server\nROMS has been down for 19 days",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback ROMS model"

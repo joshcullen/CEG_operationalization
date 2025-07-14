@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -96,17 +130,17 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/leaflet-binding-2.2.2/leaflet.js"></script>
 <script src="site_libs/leaflet-providers-2.0.0/leaflet-providers_2.0.0.js"></script>
 <script src="site_libs/leaflet-providers-plugin-2.2.2/leaflet-providers-plugin.js"></script>
-<script src="site_libs/HSI_d9e02b-1/data_stars_starsf6e4a9.txt"></script>
+<script src="site_libs/HSI_481d20-1/data_stars_stars73fc14.txt"></script>
 <script src="site_libs/joda-0.0.1/joda.js"></script>
 <script src="site_libs/joda-0.0.1/addImageQuery-bindings.js"></script>
-<script src="site_libs/PPupper200m_ea7013-1/data_stars_stars9e4c7b.txt"></script>
-<script src="site_libs/log(EKE)_01af8d-1/data_stars_stars68c1ed.txt"></script>
-<script src="site_libs/log(Chla)_f78a31-1/data_stars_starsab562f.txt"></script>
-<script src="site_libs/MLD_80bd52-1/data_stars_stars14c25d.txt"></script>
-<script src="site_libs/Oxy200m_d70652-1/data_stars_stars78ec96.txt"></script>
-<script src="site_libs/SLA_0a96e2-1/data_stars_starsf1a54b.txt"></script>
-<script src="site_libs/SST_a71295-1/data_stars_stars0e35fd.txt"></script>
-<script src="site_libs/SST_SD_9e58ac-1/data_stars_starsd96801.txt"></script>
+<script src="site_libs/PPupper200m_3d1869-1/data_stars_starse9cf30.txt"></script>
+<script src="site_libs/log(EKE)_570d39-1/data_stars_stars16328b.txt"></script>
+<script src="site_libs/log(Chla)_bfd8c2-1/data_stars_stars8f79a6.txt"></script>
+<script src="site_libs/MLD_04c2e7-1/data_stars_starsb1ae83.txt"></script>
+<script src="site_libs/Oxy200m_4fa6e7-1/data_stars_starsc752b1.txt"></script>
+<script src="site_libs/SLA_eb45a7-1/data_stars_stars72649a.txt"></script>
+<script src="site_libs/SST_da3564-1/data_stars_starsfa5638.txt"></script>
+<script src="site_libs/SST_SD_7c3e86-1/data_stars_stars57fd8b.txt"></script>
 
 
 </head>
@@ -214,40 +248,40 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <div class="card bslib-card bslib-mb-spacing html-fill-item html-fill-container" data-bslib-card-init="" data-require-bs-caller="card()" data-require-bs-version="5">
 <div class="card-header">
-<ul class="nav nav-tabs card-header-tabs" data-tabsetid="2128">
+<ul class="nav nav-tabs card-header-tabs" data-tabsetid="4427">
 <li class="active">
-<a href="#tab-2128-1" data-toggle="tab" data-bs-toggle="tab" data-value="Latest">Latest</a>
+<a href="#tab-4427-1" data-toggle="tab" data-bs-toggle="tab" data-value="Latest">Latest</a>
 </li>
 <li>
-<a href="#tab-2128-2" data-toggle="tab" data-bs-toggle="tab" data-value="Latest - 1">Latest - 1</a>
+<a href="#tab-4427-2" data-toggle="tab" data-bs-toggle="tab" data-value="Latest - 1">Latest - 1</a>
 </li>
 <li>
-<a href="#tab-2128-3" data-toggle="tab" data-bs-toggle="tab" data-value="Latest - 2">Latest - 2</a>
+<a href="#tab-4427-3" data-toggle="tab" data-bs-toggle="tab" data-value="Latest - 2">Latest - 2</a>
 </li>
 <li>
-<a href="#tab-2128-4" data-toggle="tab" data-bs-toggle="tab" data-value="Latest - 3">Latest - 3</a>
+<a href="#tab-4427-4" data-toggle="tab" data-bs-toggle="tab" data-value="Latest - 3">Latest - 3</a>
 </li>
 </ul>
 </div>
-<div class="tab-content html-fill-item html-fill-container" data-tabsetid="2128">
-<div class="tab-pane active html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest" id="tab-2128-1" style="gap:0;padding:0;">
+<div class="tab-content html-fill-item html-fill-container" data-tabsetid="4427">
+<div class="tab-pane active html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest" id="tab-4427-1" style="gap:0;padding:0;">
+<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+<img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-13.png?raw=true">
+</div>
+</div>
+<div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest - 1" id="tab-4427-2" style="gap:0;padding:0;">
+<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+<img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-12.png?raw=true">
+</div>
+</div>
+<div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest - 2" id="tab-4427-3" style="gap:0;padding:0;">
+<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+<img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-11.png?raw=true">
+</div>
+</div>
+<div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest - 3" id="tab-4427-4" style="gap:0;padding:0;">
 <div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
 <img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-10.png?raw=true">
-</div>
-</div>
-<div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest - 1" id="tab-2128-2" style="gap:0;padding:0;">
-<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
-<img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-09.png?raw=true">
-</div>
-</div>
-<div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest - 2" id="tab-2128-3" style="gap:0;padding:0;">
-<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
-<img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-08.png?raw=true">
-</div>
-</div>
-<div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="Latest - 3" id="tab-2128-4" style="gap:0;padding:0;">
-<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
-<img src="https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-07.png?raw=true">
 </div>
 </div>
 </div>
@@ -260,8 +294,182 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="interactive-map">Interactive Map</h2>
 <p>This example shows both model predictions and environmental covariates used to estimate the models. Change the date and selected variable to explore these relationships in more detail.</p>
 <iframe width="900" height="650" src="https://joshcullen.shinyapps.io/leatherback_cmems_model/"></iframe>
+</section>
+<section id="download-map-products-and-raster-layers" class="level2">
+<h2 class="anchored" data-anchor-id="download-map-products-and-raster-layers">Download Map Products and Raster Layers</h2>
+<section id="from-website" class="level3">
+<h3 class="anchored" data-anchor-id="from-website">From website</h3>
+<div>
+<p><label for="start-date">Start Date:</label> <input type="date" id="start-date" name="start-date" min="2024-11-08"></p>
+<p><label for="end-date">End Date:</label> <input type="date" id="end-date" name="end-date" min="2024-11-08"></p>
+<p><button onclick="filterAndDownload('png')" style="background-color: #002364; color: white">Download products</button> <button onclick="filterAndDownload('tiff')" style="background-color: #002364; color: white">Download rasters</button></p>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const today = new Date().toISOString().split("T")[0]; // Format: 'YYYY-MM-DD'
+  document.getElementById("start-date").max = today;
+  document.getElementById("end-date").max = today;
+});
+</script>
+<div id="file-list" style="margin-top: 20px;">
+
+</div>
+<!-- Spinner -->
+<div id="spinner" style="display:none; margin-top:10px;">
+<div class="loader">
+
+</div>
+<p>
+Downloading files…
+</p>
+</div>
+<!-- JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- Spinner CSS -->
+<style>
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+#spinner p {
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+}
+</style>
+<script>
+function extractDate(filename) {
+  const match = filename.match(/(\d{4}-\d{2}-\d{2})/);
+  return match ? new Date(match[1]) : null;
+}
+
+async function filterAndDownload(extension) {
+  const startInput = document.getElementById('start-date');
+  const endInput = document.getElementById('end-date');
+  const startDate = new Date(startInput.value);
+  const endDate = new Date(endInput.value);
+  const listDiv = document.getElementById("file-list");
+  const spinner = document.getElementById("spinner");
+
+  if (isNaN(startDate) || isNaN(endDate)) {
+    alert("Please select valid start and end dates.");
+    return;
+  }
+
+  spinner.style.display = "block";
+  listDiv.innerHTML = "";
+
+  const folder = extension === "tiff"
+    ? "model_prediction/TopPredatorWatch/rasters"
+    : "model_prediction/TopPredatorWatch/img";
+
+  const apiURL = `https://api.github.com/repos/joshcullen/CEG_operationalization/contents/${folder}`;
+
+  try {
+    const response = await fetch(apiURL);
+    if (!response.ok) {
+      throw new Error("Failed to fetch file list.");
+    }
+
+    const allFiles = await response.json();
+    const matchingFiles = allFiles.filter(f =>
+      f.name.toLowerCase().endsWith(`.${extension}`)
+    );
+
+    const filteredFiles = matchingFiles.filter(file => {
+      const fileDate = extractDate(file.name);
+      return fileDate && fileDate >= startDate && fileDate <= endDate;
+    });
+
+    if (filteredFiles.length === 0) {
+      listDiv.innerHTML = `<p>No matching .${extension} files found in date range.</p>`;
+      spinner.style.display = "none";
+      return;
+    }
+
+    const zip = new JSZip();
+
+    for (const file of filteredFiles) {
+      const res = await fetch(file.download_url);
+      const blob = await res.blob();
+      const buffer = await blob.arrayBuffer();
+      zip.file(file.name, buffer);
+    }
+
+    const content = await zip.generateAsync({ type: "blob" });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(content);
+    a.download = `Leatherback_CMEMS_${extension.toUpperCase()}.zip`;
+    a.click();
+
+    listDiv.innerHTML = `<p>✅ File download complete.</p>`;
+  } catch (error) {
+    console.error(error);
+    listDiv.innerHTML = `<p>❌ Error occurred: ${error.message}</p>`;
+  } finally {
+    spinner.style.display = "none";
+  }
+}
+
+// Limit inputs to today
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("start-date").max = today;
+  document.getElementById("end-date").max = today;
+});
+</script>
+</section>
+<section id="from-github" class="level3">
+<h3 class="anchored" data-anchor-id="from-github">From GitHub</h3>
+<p>Clone the repository: <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository" class="uri">https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository</a></p>
+</section>
+<section id="from-r" class="level3">
+<h3 class="anchored" data-anchor-id="from-r">From R</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curl)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glue)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>download_rasters_git <span class="ot">=</span> <span class="cf">function</span>(save_dir, start_date, end_date){</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Find files from repo folder</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  prods <span class="ot">&lt;-</span> httr<span class="sc">::</span><span class="fu">GET</span>(<span class="st">"https://api.github.com/repos/joshcullen/CEG_operationalization/contents/model_prediction/TopPredatorWatch/rasters"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  httr<span class="sc">::</span><span class="fu">stop_for_status</span>(prods)  <span class="co">#check to make sure no errors w/ request (should return nothing to console if working properly)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  filelist <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">content</span>(prods), <span class="st">"["</span>, <span class="st">"name"</span>), <span class="at">use.names =</span> F)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  prod_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">files =</span> filelist,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                        <span class="at">date =</span> <span class="fu">gsub</span>(<span class="st">"^[A-Za-z]+</span><span class="sc">\\</span><span class="st">_|</span><span class="sc">\\</span><span class="st">.tiff$"</span>, <span class="st">""</span>, filelist) <span class="sc">|&gt;</span> </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">as.Date</span>()</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter files by date range</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  prod_filt <span class="ot">&lt;-</span> prod_df <span class="sc">|&gt;</span> </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(start_date),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>           date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(end_date)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(files)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  git_url <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">"https://raw.githubusercontent.com/joshcullen/CEG_operationalization/main/model_prediction/TopPredatorWatch/rasters/{prod_filt}"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  file_dest <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">"{save_dir}/{prod_filt}"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  curl<span class="sc">::</span><span class="fu">multi_download</span>(<span class="at">urls =</span> git_url, <span class="at">destfiles =</span> file_dest)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Download files</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">download_rasters_git</span>(<span class="at">save_dir =</span> <span class="st">"~/Downloads"</span>, <span class="at">start_date =</span> <span class="st">"2025-06-25"</span>, <span class="at">end_date =</span> <span class="st">"2025-06-30"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
