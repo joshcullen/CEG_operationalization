@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://joshcullen.github.io/CEG_operationalization/lbst_cmems.html</loc>
-    <lastmod>2025-10-24T20:18:41.723Z</lastmod>
-  </url>
-  <url>
     <loc>https://joshcullen.github.io/CEG_operationalization/leatherback.html</loc>
-    <lastmod>2025-07-10T20:13:47.154Z</lastmod>
+    <lastmod>2025-10-25T15:52:04.485Z</lastmod>
   </url>
   <url>
-    <loc>https://joshcullen.github.io/CEG_operationalization/lbst_roms.html</loc>
-    <lastmod>2025-08-04T14:44:44.881Z</lastmod>
+    <loc>https://joshcullen.github.io/CEG_operationalization/lbst_cmems.html</loc>
+    <lastmod>2025-10-25T15:52:04.485Z</lastmod>
   </url>
   <url>
     <loc>https://joshcullen.github.io/CEG_operationalization/index.html</loc>
-    <lastmod>2025-06-18T22:00:08.610Z</lastmod>
+    <lastmod>2025-10-25T15:52:04.483Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joshcullen.github.io/CEG_operationalization/lbst_roms.html</loc>
+    <lastmod>2025-10-25T15:52:04.485Z</lastmod>
   </url>
 </urlset>
