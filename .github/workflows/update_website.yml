@@ -1,10 +1,13 @@
+
 name: Update Website
 
 on:
+  # triggered by previous GHA completion in workflow
   workflow_run:
     workflows: ["CMEMS model workflow","ROMS model workflow"]
     types:
       - completed
+  # triggered by manual activation on GitHub repo website
   workflow_dispatch:
 
 jobs:
@@ -17,13 +20,12 @@ jobs:
       QUARTO_BUILD_DIR: website/docs
     steps:
     - name: Check out repository
-      uses: actions/checkout@v4 # Updated to v4 (standard)
+      uses: actions/checkout@v5
       with:
         sparse-checkout: |
           metadata/
           website/
-          model_prediction/  # [GULF ADDITION] Need this to get the Gulf TIFFs
-        sparse-checkout-cone-mode: true
+        sparse-checkout-cone-mode: true  # Set to false for more granular control
 
     - name: Install Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -31,10 +33,14 @@ jobs:
         auto-update-conda: true
         python-version: 3.11
 
+    # - name: Check disk space
+    #   run: DiskUsage C:\ /h
+
     - name: Install Copernicus Marine Toolbox
       shell: bash -el {0}
       run: |
         conda install -c conda-forge copernicusmarine
+        # where copernicusmarine
         conda install scipy
 
     - name: Set up Quarto
@@ -47,53 +53,25 @@ jobs:
       with:
         r-version: '4.4.3'
 
-    - name: Install R packages (Standard)
+    - name: Install R packages
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         cache-version: 4
 
-    # [GULF ADDITION] Explicitly install packages for the Gulf App & Shinylive
-    # We do this separately to ensure 'shinylive' and 'terra' are available on Windows
-    - name: Install Gulf App Dependencies
-      run: |
-        install.packages(c("shinylive", "httpuv", "shiny", "terra", "sf", "ggplot2", "plotly", "rnaturalearth", "rnaturalearthdata", "scales", "patchwork"))
-      shell: Rscript {0}
-
-    # [GULF ADDITION] Stage and Build the Gulf App
-    # This copies the TIFFs from the model folder -> app folder -> exports to website docs
-    - name: Build Gulf Shinylive App
-      shell: bash
-      run: |
-        # 1. Create Staging Directory
-        mkdir -p website/gulf/predictions
-        mkdir -p website/gulf/data
-
-        # 2. Copy Daily Predictions
-        # Use robust copy (find files first to avoid error if empty)
-        cp model_prediction/gulf/predictions/*.tif website/gulf/predictions/ || echo "No Gulf predictions found"
-
-        # 3. Copy Static Data
-        cp model_prediction/gulf/data/*.gpkg website/gulf/data/ || true
-        cp model_prediction/gulf/data/*.shp website/gulf/data/ || true
-        cp model_prediction/gulf/data/*.shx website/gulf/data/ || true
-        cp model_prediction/gulf/data/*.dbf website/gulf/data/ || true
-        cp model_prediction/gulf/data/*.prj website/gulf/data/ || true
-
-        # 4. Copy the App Code
-        # IMPORTANT: You must save the R code I gave you earlier as 'website/gulf/app.R'
-        # If it doesn't exist yet, create a dummy one or ensure it's committed.
-        
-        # 5. Export to Website Build Folder
-        # This creates 'website/docs/gulf_static' containing the WASM bundle
-        Rscript -e "shinylive::export('website/gulf', 'website/docs/gulf_static')"
-
+    # - name: Render and Publish
+    #   uses: quarto-dev/quarto-actions/publish@v2
+    #   with:
+    #     target: gh-pages
+    #     path: website
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: Render Quarto Website
-      run: quarto render website 
-      # Note: This will execute West Coast chunks (live) but ignore the Gulf folder (static)
-
+      run: quarto render website  #renders docs from dir named 'website'
+      
     - name: Deploy to gh-pages branch
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ${{ env.QUARTO_BUILD_DIR }}
-        publish_branch: gh-pages
+        publish_dir: ${{ env.QUARTO_BUILD_DIR }} # This is the output folder (website/docs)
+        publish_branch: gh-pages # Explicitly target the gh-pages branch
