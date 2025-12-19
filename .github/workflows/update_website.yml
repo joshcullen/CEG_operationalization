@@ -65,27 +65,27 @@ jobs:
       shell: bash
       run: |
         # 1. Create Staging Directory
-        mkdir -p website/gulf_app/predictions
-        mkdir -p website/gulf_app/data
+        mkdir -p website/gulf/predictions
+        mkdir -p website/gulf/data
 
         # 2. Copy Daily Predictions
         # Use robust copy (find files first to avoid error if empty)
-        cp model_prediction/gulf/predictions/*.tif website/gulf_app/predictions/ || echo "No Gulf predictions found"
+        cp model_prediction/gulf/predictions/*.tif website/gulf/predictions/ || echo "No Gulf predictions found"
 
         # 3. Copy Static Data
-        cp model_prediction/gulf/data/*.gpkg website/gulf_app/data/ || true
-        cp model_prediction/gulf/data/*.shp website/gulf_app/data/ || true
-        cp model_prediction/gulf/data/*.shx website/gulf_app/data/ || true
-        cp model_prediction/gulf/data/*.dbf website/gulf_app/data/ || true
-        cp model_prediction/gulf/data/*.prj website/gulf_app/data/ || true
+        cp model_prediction/gulf/data/*.gpkg website/gulf/data/ || true
+        cp model_prediction/gulf/data/*.shp website/gulf/data/ || true
+        cp model_prediction/gulf/data/*.shx website/gulf/data/ || true
+        cp model_prediction/gulf/data/*.dbf website/gulf/data/ || true
+        cp model_prediction/gulf/data/*.prj website/gulf/data/ || true
 
         # 4. Copy the App Code
-        # IMPORTANT: You must save the R code I gave you earlier as 'website/gulf_app/app.R'
+        # IMPORTANT: You must save the R code I gave you earlier as 'website/gulf/app.R'
         # If it doesn't exist yet, create a dummy one or ensure it's committed.
         
         # 5. Export to Website Build Folder
-        # This creates 'website/docs/gulf_app_static' containing the WASM bundle
-        Rscript -e "shinylive::export('website/gulf_app', 'website/docs/gulf_app_static')"
+        # This creates 'website/docs/gulf_static' containing the WASM bundle
+        Rscript -e "shinylive::export('website/gulf', 'website/docs/gulf_static')"
 
     - name: Render Quarto Website
       run: quarto render website 
