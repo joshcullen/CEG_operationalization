@@ -42,11 +42,18 @@ download_cmems = function(path_copernicus_marine_toolbox = "copernicusmarine",
                           ncdir_cmems, product_cmems,
                           variable_cmems, savename_cmems, get_date, var_depth_min,
                           var_depth_max) {
+  
+  # Check if `get_date` is 1 or more days
+  if (length(get_date) > 1) {
+    get_date1 <- get_date
+  } else {
+    get_date1 <- rep(get_date, 2)
+  }
 
   # Write code from copernicusmarine via CLI
   command <- glue("{path_copernicus_marine_toolbox} subset -i {product_cmems} \\
                   -x 100.0 -X 295.0 -y -60.0 -Y 60.0 \\
-                  -t {get_date} -T {get_date} \\
+                  -t {get_date1[1]} -T {get_date1[2]} \\
                   -z {var_depth_min}. -Z {var_depth_max}. \\
                   --variable {variable_cmems} \\
                   -o {ncdir_cmems} -f {savename_cmems}")
