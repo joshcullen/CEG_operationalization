@@ -12,7 +12,80 @@ library(leaflet)
 library(leafem)
 library(terra)
 library(cmocean)
+library(reticulate)
 
+
+###########################################################
+### Set up venv and Python to read Zarr from GCS bucket ###
+###########################################################
+
+# Tell R to use this specific environment
+# use_virtualenv("r-shiny-zarr", required = TRUE)
+
+py_require(
+  packages = c("xarray", "zarr", "gcsfs", "numpy", "certifi"),
+  python_version = "3.12"
+)
+
+#Setup Python Environment
+# Ensure xarray, zarr, and gcsfs (for Google storage) are installed
+xr <- import("xarray")
+
+# SSL fix for Linux/shinyapps.io
+certifi <- import("certifi")
+Sys.setenv(SSL_CERT_FILE = certifi$where())
+Sys.setenv(REQUESTS_CA_BUNDLE = certifi$where())
+
+# Define path for Zarr file
+zarr_path <- "gs://esd-climate-ecosystems-dev/zarr_cmems"
+
+
+# Path to your uploaded Service Account Key
+# IMPORTANT: Ensure this file is in your project folder when you click 'Publish'
+key_file <- "gcs_key.json"
+
+
+# Open the dataset using creds (since bucket is currently private)
+ds_cloud <- xr$open_zarr(
+  zarr_path, 
+  consolidated = FALSE,
+  # storage_options = list(token = "/Users/joshcullen/.config/gcloud/application_default_credentials.json")
+  storage_options = list(token = key_file)
+)
+
+
+# Define list of covars to viz
+covar_list <- ds_cloud$variables$mapping |> 
+  names() |> 
+  str_subset(pattern = "crs|ugosa|vgosa|longitude|latitude|time", negate = TRUE)
+
+covar_dict <- data.frame(raw_name = c("analysed_sst","eke","CHL","mlotst","nppv","sst_sd","o2","sla"),
+                         new_name = c("sst","eke","log_chla","mld","PPupper200m","sst_sd","o2_200m","sla"))
+  
+  
+
+read_zarr <- function(data, get_date, covar) {
+  
+  # Access Python object and use xarray methods directly
+  r_py <- data[[covar]]$sel(time = get_date)
+  
+  # Convert to R terra object
+  # We extract the values as a matrix/array and the spatial metadata
+  values <- r_py$data
+  lons <- r_py$longitude$values
+  lats <- r_py$latitude$values
+  crs_wkt <- ds_cloud$crs$variable$attrs$crs_wkt
+  
+  # Create the SpatRaster
+  r_terra <- rast(
+    values,
+    crs = crs_wkt,
+    extent = ext(min(lons), max(lons), min(lats), max(lats))
+  )
+  
+  
+  return(r_terra)
+}
 
 #############################
 ### Check data on GH repo ###
@@ -23,7 +96,7 @@ base_api <- "https://api.github.com/repos/joshcullen/CEG_operationalization/cont
 
 # Folders
 pred_folder <- "model_prediction/TopPredatorWatch/rasters"
-env_folder <- "data_processing/TopPredatorWatch/rasters"
+# env_folder <- "data_processing/TopPredatorWatch/rasters"
 
 # Function to get file listing from GitHub folder
 get_file_dates <- function(folder, pattern, strip_pattern, strip = TRUE) {
@@ -51,24 +124,27 @@ pred_rasters <- get_file_dates(folder = pred_folder,
                                strip = TRUE)
 
 # Get environmental rasters
-env_rasters <- get_file_dates(folder = env_folder,
-                              pattern = "\\.tiff$",
-                              strip_pattern = "_\\d{4}-\\d{2}-\\d{2}",
-                              strip = TRUE) |> 
-  filter(!str_detect(name, "day|ugosa|vgosa"))  #remove unneeded variables
+# env_rasters <- get_file_dates(folder = env_folder,
+#                               pattern = "\\.tiff$",
+#                               strip_pattern = "_\\d{4}-\\d{2}-\\d{2}",
+#                               strip = TRUE) |> 
+#   filter(!str_detect(name, "day|ugosa|vgosa"))  #remove unneeded variables
 
 # Combine both
-all_rasters <- bind_rows(pred_rasters, env_rasters)
+# all_rasters <- bind_rows(pred_rasters, env_rasters)
 
 # Create a dropdown of available dates (those that appear in all layers)
-valid_dates <- intersect(pred_rasters$date, env_rasters$date) |> 
+valid_dates <- #intersect(pred_rasters$date, env_rasters$date) |> 
+  pred_rasters$date |> 
   sort(decreasing = TRUE) |> 
   as.character()
 
 
 # Define list of palette colors from {cmocean} to viz covars
-covar_pal_df <- data.frame(covar = unique(env_rasters$layer),
-                           pals = c("algae","tempo","algae","dense","matter","delta","thermal","amp"))
+# covar_pal_df <- data.frame(covar = unique(env_rasters$layer),
+#                            pals = c("algae","tempo","algae","dense","matter","delta","thermal","amp"))
+covar_pal_df <- data.frame(covar = covar_dict$new_name,
+                           pals = c("thermal","tempo","algae","dense","algae","amp","matter","delta"))
 
 
 
@@ -92,14 +168,17 @@ ui <- page_fluid(
     selectInput(inputId = "date",
                 "Select date: ",
                 choices = valid_dates,
-                selected = valid_dates[1],
+                # selected = valid_dates[1],
+                selected = "2026-01-29",    #need to update once I start appending Zarr file
                 multiple = FALSE,
                 width = "150px"),
     
     selectInput(inputId = "covar",
                 "Select variable: ",
-                choices = unique(env_rasters$layer),
-                selected = unique(env_rasters$layer)[1],
+                # choices = unique(env_rasters$layer),
+                # selected = unique(env_rasters$layer)[1],
+                choices = covar_dict$new_name[which(covar_dict$raw_name %in% covar_list)],
+                selected = covar_dict$new_name[which(covar_dict$raw_name %in% covar_list[1])],
                 multiple = FALSE,
                 width = "150px")
   ),
@@ -136,13 +215,19 @@ server <- function(input, output, session) {
       # project('EPSG:3857')  # Reproject so properly mapped by leaflet
   })
   
+  # covar_rast <- reactive({
+  #   env_rasters |> 
+  #     filter(date == input$date,
+  #            layer == input$covar) |> 
+  #     pull(url) |> 
+  #     rast() |> 
+  #     # project('EPSG:3857') |>  # Reproject so properly mapped by leaflet
+  #     crop(pred_rast())  #crop to match same extent as prediction
+  # })
   covar_rast <- reactive({
-    env_rasters |> 
-      filter(date == input$date,
-             layer == input$covar) |> 
-      pull(url) |> 
-      rast() |> 
-      # project('EPSG:3857') |>  # Reproject so properly mapped by leaflet
+    ds_cloud |> 
+      read_zarr(get_date = input$date,
+                covar = covar_dict[covar_dict$new_name == input$covar, "raw_name"]) |> 
       crop(pred_rast())  #crop to match same extent as prediction
   })
   
