@@ -45,7 +45,7 @@ ds.to_zarr(
     append_dim="time",
     consolidated=False,
     # storage_options={"token": "google_default"}
-    storage_options={"token": "gcp_key.json"})
+    storage_options={"token": "gcs_key.json"})
 #took 1.5 min to run (for 41 MB dataset)
 
 
