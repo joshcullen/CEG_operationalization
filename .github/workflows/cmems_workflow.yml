@@ -3,8 +3,8 @@ name: CMEMS model workflow
 
 on:
   # triggered on push to repo
-  push:
-    branches: dev
+  # push:
+  #   branches: dev
   # triggered by cron job
   schedule:
     # * is a special character in YAML so you have to quote this string
@@ -22,7 +22,6 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v5
       with:
-        ref: 'dev'
         sparse-checkout: |
           metadata/
           repo_cleanup/
@@ -105,7 +104,6 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v5
       with:
-        ref: 'dev'
         sparse-checkout: |
           requirements.txt
           metadata/
@@ -182,7 +180,6 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v5
       with:
-        ref: 'dev'
         sparse-checkout: |
           metadata/
           model_prediction/R/
