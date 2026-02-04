@@ -57,7 +57,7 @@ ds.to_zarr(
 # print(ds_cloud)
 # ds_cloud.chunks
 
-# Subset Zarr data from cloud and plot
+# # Subset Zarr data from cloud and plot
 # ds_cloud['analysed_sst'].sel(
 #   latitude=slice(50, 20), 
 #   longitude=slice(220, 260)

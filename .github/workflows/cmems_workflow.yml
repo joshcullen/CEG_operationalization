@@ -165,7 +165,7 @@ jobs:
         # git fetch origin gh-pages --depth=1
         # git pull
         
-        git add --sparse data_processing/TopPredatorWatch/rasters/*.nc
+        git add --sparse data_processing/TopPredatorWatch/rasters/*.{nc,tiff}
         git commit -m 'Processed CMEMS files'
         
         #Quickly fetches remote changes and reapplies local commit on top of it
