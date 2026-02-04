@@ -3,8 +3,8 @@ name: CMEMS model workflow
 
 on:
   # triggered on push to repo
-  # push:
-  #   branches: main
+  push:
+    branches: dev
   # triggered by cron job
   schedule:
     # * is a special character in YAML so you have to quote this string
