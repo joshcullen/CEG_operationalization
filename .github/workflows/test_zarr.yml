@@ -17,27 +17,30 @@ jobs:
       with:
         ref: 'dev'
         sparse-checkout: |
+          requirements.txt
           data_processing/R/
         sparse-checkout-cone-mode: false # Set to false for more granular control
     
     # - name: Print dir tree
     #   run: tree
 
-    - name: Install Conda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        channels: conda-forge,defaults
-        python-version: 3.12
+    # - name: Install Conda
+    #   uses: conda-incubator/setup-miniconda@v3
+    #   with:
+    #     auto-update-conda: true
+    #     channels: conda-forge,defaults
+    #     python-version: 3.12
 
     # - name: Check disk space
     #   run: |
     #     df -h
 
-    - name: Install Copernicus Marine Toolbox
-      shell: bash -el {0}
-      run: |
-        conda install -c conda-forge copernicusmarine xarray gcsfs zarr scipy
+    # - name: Install Copernicus Marine Toolbox
+    #   shell: bash -el {0}
+    #   run: |
+    #     conda install -c conda-forge copernicusmarine xarray gcsfs zarr scipy
+    - name: Install dependencies
+      run: pip install -r requirements.txt
     
     - name: Create GCS Credentials File
       run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
