@@ -1,7 +1,9 @@
 
 name: Test Zarr
 
-on: workflow_dispatch
+push:
+    branches:
+      - dev
 
 jobs:
   read_zarr:
