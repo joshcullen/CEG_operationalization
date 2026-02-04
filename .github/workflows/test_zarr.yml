@@ -46,4 +46,4 @@ jobs:
       run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
 
     - name: Run Python script
-      run: python test_zarr.py
+      run: python data_processing/R/test_zarr.py
