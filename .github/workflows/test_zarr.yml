@@ -17,10 +17,7 @@ jobs:
       with:
         ref: 'dev'
         sparse-checkout: |
-          metadata/
-          repo_cleanup/
-          data_acquisition/R/
-          data_acquisition/netcdfs/cmems_ncdfs/placeholder.txt
+          data_processing/R/
         sparse-checkout-cone-mode: false # Set to false for more granular control
     
     # - name: Print dir tree
