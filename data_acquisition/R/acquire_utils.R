@@ -1,3 +1,4 @@
+# fmt: skip file
 
 #' Functions to acquire environmental data from ERDDAP
 #'

@@ -1,4 +1,3 @@
-
 # Script for downloading CMEMS data using GitHub Actions workflow
 
 library(dplyr)
@@ -19,44 +18,46 @@ ncdir_cmems = "data_acquisition/netcdfs/cmems_ncdfs"
 get_date <- Sys.Date() - 1
 
 
-
-
 ###############
 #### cmems ####
 ###############
 
 # Define CMEMS metadata object
 meta_cmems <- meta |>
-  filter(data_type == 'CMEMS',
-         category != 'derived' | is.na(category)) |>
-  mutate(var_depth_min = case_when(variable != 'o2' ~ 0,
-                                   TRUE ~ 200),
-         var_depth_max = case_when(variable %in% c('analysed_sst','CHL','mlotst') ~ 1,
-                                   TRUE ~ 200))
+  filter(data_type == 'CMEMS', category != 'derived' | is.na(category)) |>
+  mutate(
+    var_depth_min = case_when(variable != 'o2' ~ 0, TRUE ~ 200),
+    var_depth_max = case_when(
+      variable %in% c('analysed_sst', 'CHL', 'mlotst') ~ 1,
+      TRUE ~ 200
+    )
+  )
 
 
 # Transform to list and add exported file names
 cmems_product_list <- meta_cmems |>
-  mutate(savename = glue("{product}_{variable}_{get_date}")) |>
+  mutate(savename = glue("{product}_{variable}_{get_date[1]}")) |>
   split(~variable)
 
 
 tryCatch(
-  expr ={
-
+  expr = {
     # Download netCDF files if available
-    purrr::map(cmems_product_list,
-               ~download_cmems("/usr/share/miniconda/envs/test/bin/copernicusmarine",
-                               ncdir_cmems,
-                               .x$product,
-                               .x$variable,
-                               .x$savename,
-                               get_date,
-                               .x$var_depth_min,
-                               .x$var_depth_max))
-
+    purrr::map(
+      cmems_product_list,
+      ~ download_cmems(
+        "/usr/share/miniconda/envs/test/bin/copernicusmarine",
+        ncdir_cmems,
+        .x$product,
+        .x$variable,
+        .x$savename,
+        get_date,
+        .x$var_depth_min,
+        .x$var_depth_max
+      )
+    )
   },
-  error = function(e){
+  error = function(e) {
     message(glue("{variable} from CMEMS not available {get_date}"))
     print(e)
   }

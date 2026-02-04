@@ -1,4 +1,4 @@
-
+# fmt: skip file
 
 #' Post-process the netCDF files for easy use by models and to generate derived variables
 #' 
@@ -55,7 +55,7 @@ process_vars = function(infile, indir, variable, outdir, savename, get_date, too
 #' @param get_date Date of interest in YYYY-MM-DD format.
 #' @param template A SpatRaster layer of the spatial extent, resolution, and projection of interest for the particular tool.
 #'
-#' @return A geoTIFF file is exported locally to the `outdir` path that was specified.
+#' @return A netCDF file is exported locally to the `outdir` path that was specified.
 #' 
 process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_date, template) {
   
@@ -100,8 +100,8 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
     }
     
     # Resample raster by template
-    r2 <- resample(r, template)  
-    time(r2) <- NULL  #prevent creation of aux.json files (associated w/ times or units)
+    r2 <- resample(r, template, threads = TRUE, by_util = TRUE)  
+    # time(r2) <- NULL  #prevent creation of aux.json files (associated w/ times or units)
     
     
     # Remove "no data" values added for sla, ugosa, and vgosa
@@ -113,13 +113,13 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
     if (!variable %in% c('ugosa','vgosa')) {
       
       r2_mean <- focal(r2, w = matrix(1, nrow = 5, ncol = 5), fun = mean, na.rm = TRUE)
-      writeRaster(r2_mean, glue("{outdir}/{savename}_{get_date}.tiff"), overwrite = TRUE)
+      writeCDF(r2_mean, glue("{outdir}/{savename}_{get_date}.nc"), varname = variable, overwrite = TRUE)
       
     } else {
       
-      units(r2) <- NULL  #need to remove to prevent creation of .aux.json files
+      # units(r2) <- NULL  #need to remove to prevent creation of .aux.json files
       
-      writeRaster(r2, glue("{outdir}/{savename}_{get_date}.tiff"), overwrite = TRUE)
+      writeCDF(r2, glue("{outdir}/{savename}_{get_date}.nc"), varname = variable, overwrite = TRUE)
       
     }
     
@@ -236,26 +236,26 @@ calc_derived_vars = function(dir, variable, savename, get_date, tool) {
 #' @param savename The file name to save the derived raster.
 #' @param get_date Date of interest in YYYY-MM-DD format.
 #'
-#' @return A geoTIFF file is exported locally to the directories specified in the function.
+#' @return A netCDF file is exported locally to the directories specified in the function.
 #' 
 calc_derived_vars_TopPred = function(dir, variable, savename, get_date) {
   
   
   if (variable == 'sst_sd') {  # Calculate SST_sd
     
-    sst_sd <- rast(glue("{dir}/sst_{get_date}.tiff")) |> 
+    sst_sd <- rast(glue("{dir}/sst_{get_date}.nc")) |> 
       focal(w = matrix(1, nrow = 5, ncol = 5), fun = sd, na.rm = TRUE)
-    writeRaster(sst_sd, glue("{dir}/{savename}_{get_date}.tiff"), overwrite = TRUE)
+    writeCDF(sst_sd, glue("{dir}/{savename}_{get_date}.nc"), varname = variable, overwrite = TRUE)
     
   } else if (variable == 'eke') {  # Calculate EKE
     
-    u <- rast(glue("{dir}/ugosa_{get_date}.tiff"))
-    v <- rast(glue("{dir}/vgosa_{get_date}.tiff"))
+    u <- rast(glue("{dir}/ugosa_{get_date}.nc"))
+    v <- rast(glue("{dir}/vgosa_{get_date}.nc"))
     
     eke <- 0.5 * (u^2 + v^2)
     l.eke <- log10(eke + 0.001)
     eke_mean <- focal(l.eke, w = matrix(1, nrow = 5, ncol = 5), fun = mean, na.rm = TRUE)
-    writeRaster(eke_mean, glue("{dir}/{savename}_{get_date}.tiff"), overwrite = TRUE)
+    writeCDF(eke_mean, glue("{dir}/{savename}_{get_date}.nc"), varname = variable, overwrite = TRUE)
     
   } else {
     stop("`variable` must be one of either 'sst_sd' or 'eke' when `tool = 'TopPredatorWatch'`.")

@@ -1,0 +1,46 @@
+
+name: Test Zarr
+
+on: workflow_dispatch
+
+jobs:
+  read_zarr:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v5
+      with:
+        sparse-checkout: |
+          metadata/
+          repo_cleanup/
+          data_acquisition/R/
+          data_acquisition/netcdfs/cmems_ncdfs/placeholder.txt
+        sparse-checkout-cone-mode: false # Set to false for more granular control
+    
+    # - name: Print dir tree
+    #   run: tree
+
+    - name: Install Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        channels: conda-forge,defaults
+        python-version: 3.12
+
+    # - name: Check disk space
+    #   run: |
+    #     df -h
+
+    - name: Install Copernicus Marine Toolbox
+      shell: bash -el {0}
+      run: |
+        conda install -c conda-forge copernicusmarine
+        conda install scipy
+    
+    - name: Create GCS Credentials File
+      run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
+
+    - name: Run Python script
+      run: python test_zarr.py
