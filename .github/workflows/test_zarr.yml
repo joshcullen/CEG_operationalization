@@ -37,11 +37,11 @@ jobs:
     - name: Install Copernicus Marine Toolbox
       shell: bash -el {0}
       run: |
-        conda install -c conda-forge copernicusmarine
-        conda install scipy
+        conda install -c conda-forge copernicusmarine xarray gcsfs zarr scipy
     
     - name: Create GCS Credentials File
       run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
 
     - name: Run Python script
+      shell: bash -el {0}
       run: python data_processing/R/test_zarr.py
