@@ -24,7 +24,7 @@ predict_models = function(dyn_rast_dir, static_rast_dir, savename, get_date, bbo
   # Load rasters and rename layers
   dyn_rast <- rast(list.files(dyn_rast_dir, pattern = paste(get_date), full.names = TRUE))
   dyn_names <- list.files(dyn_rast_dir, pattern = paste(get_date)) |>
-    str_remove(pattern = glue("_{get_date}.nc"))
+    str_remove(pattern = glue("_{get_date}.*$"))
   names(dyn_rast) <- dyn_names
   
   static_rast <- rast(list.files(static_rast_dir, full.names = TRUE))
