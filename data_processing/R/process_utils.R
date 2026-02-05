@@ -96,7 +96,12 @@ process_vars_TopPred = function(infile, indir, variable, outdir, savename, get_d
     
     # Average NPP over Z-dimension
     if (variable == 'nppv') {
+      tmp <- r  #for adding back metadata
+      
       r <- mean(r, na.rm = TRUE)
+      time(r) <- time(tmp)[1]
+      units(r) <- units(tmp)[1]
+      varnames(r) <- varnames(tmp)[1]
     }
     
     # Resample raster by template
