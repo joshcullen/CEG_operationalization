@@ -36,6 +36,7 @@ zarr_path = "gs://esd-climate-ecosystems-dev/zarr_cmems"
 # Ensure that all variables include a time dim (by matching dims from sst)
 # ds = ds.broadcast_like(ds[['analysed_sst']])
 # ds['crs'] = ds['crs'].isel(time=0, drop=True)
+ds['crs'] = ds['crs'].expand_dims('time')  #needs to match format in bucket
 
 # Write to cloud bucket
 #%%time  #not working right now (for some reason)
