@@ -34,8 +34,8 @@ zarr_path = "gs://esd-climate-ecosystems-dev/zarr_cmems"
 ## If not, need to run `gcloud auth application-default login` assuming gcloud SDK already installed
 
 # Ensure that all variables include a time dim (by matching dims from sst)
-ds = ds.broadcast_like(ds[['analysed_sst']])
-ds['crs'] = ds['crs'].isel(time=0, latitude=0, longitude=0, drop=True)
+# ds = ds.broadcast_like(ds[['analysed_sst']])
+# ds['crs'] = ds['crs'].isel(time=0, drop=True)
 
 # Write to cloud bucket
 #%%time  #not working right now (for some reason)
