@@ -168,8 +168,7 @@ ui <- page_fluid(
     selectInput(inputId = "date",
                 "Select date: ",
                 choices = valid_dates,
-                # selected = valid_dates[1],
-                selected = "2026-01-29",    #need to update once I start appending Zarr file
+                selected = valid_dates[1],
                 multiple = FALSE,
                 width = "150px"),
     

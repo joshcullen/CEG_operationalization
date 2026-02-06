@@ -114,7 +114,7 @@ navset_card_tab(
 
 ## Interactive Map
 
-This example shows both model predictions and environmental covariates used to estimate the models. Change the date and selected variable to explore these relationships in more detail. Only the latest 60 days of data and predictions are shown at the moment.
+This example shows both model predictions and environmental covariates used to estimate the models. Change the date and selected variable to explore these relationships in more detail. Layers are available starting from **`r prod_dates$date[1]`**.
 
 ```{=html}
 <iframe width="900" height="650" src="https://joshcullen.shinyapps.io/leatherback_cmems_model/"></iframe>
@@ -128,10 +128,10 @@ This example shows both model predictions and environmental covariates used to e
 ### From website
 <div>
   <label for="start-date">Start Date:</label>
-  <input type="date" id="start-date" name="start-date" min="2024-11-08">
+  <input type="date" id="start-date" name="start-date" min="2025-06-22">
   
   <label for="end-date">End Date:</label>
-  <input type="date" id="end-date" name="end-date" min="2024-11-08">
+  <input type="date" id="end-date" name="end-date" min="2025-06-22">
   
   <span id="start-date-range" style="font-size: 0.9em; color: #555; margin-left: 5px;"></span>
 
@@ -158,7 +158,7 @@ async function fetchLatestDateFromGitHub() {
 
   dates.sort(); // Ascending
   return {
-    minDate: '2024-11-08', // Fixed known earliest date
+    minDate: '2025-06-22', // Fixed known earliest date
     maxDate: dates[dates.length - 1]
   };
 }
