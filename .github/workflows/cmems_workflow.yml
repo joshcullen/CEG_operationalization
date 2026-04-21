@@ -102,7 +102,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     # Crucial: This allows the job to request the OIDC token for GCS Auth
     permissions:
-      contents: 'read'
+      contents: 'write'
       id-token: 'write'
     steps:
     - name: Check out repository
