@@ -12,11 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    # Crucial: This allows the job to request the OIDC token
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
     steps:
     - name: Check out repository
       uses: actions/checkout@v5
       with:
-        ref: 'dev'
+        # ref: 'dev'
         sparse-checkout: |
           requirements.txt
           data_processing/R/
@@ -43,8 +48,15 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
     
-    - name: Create GCS Credentials File
-      run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
+    # - name: Create GCS Credentials File
+    #   run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        # You'll get these strings after setting up WIF in the GCP Console
+        workload_identity_provider: 'projects/933817670224/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+        service_account: 'ce-github-sa1@ggn-nmfs-usamlr-dev-7b99.iam.gserviceaccount.com'
 
     - name: Run Python script
       shell: bash -el {0}
