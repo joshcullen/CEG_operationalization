@@ -74,7 +74,7 @@ jobs:
       working-directory: ${{ github.workspace }}
     
     - name: Create artifact to share data with next job
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: raw_cmems
         path: data_acquisition/netcdfs/cmems_ncdfs/
@@ -100,6 +100,10 @@ jobs:
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    # Crucial: This allows the job to request the OIDC token for GCS Auth
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
     - name: Check out repository
       uses: actions/checkout@v5
@@ -114,7 +118,7 @@ jobs:
         sparse-checkout-cone-mode: false # Set to false for more granular control
 
     - name: Download artifact w raw CMEMS files
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: raw_cmems
         path: data_acquisition/netcdfs/cmems_ncdfs/
@@ -139,14 +143,18 @@ jobs:
       working-directory: ${{ github.workspace }}
     
     - name: Create artifact to share data with next job
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: processed_cmems
         path: data_processing/TopPredatorWatch/rasters/
         retention-days: 1
     
-    - name: Create GCS Credentials File
-      run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
+    - name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v3'
+      with:
+        # You'll get these strings after setting up WIF in the GCP Console
+        workload_identity_provider: 'projects/933817670224/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+        service_account: 'ce-github-sa1@ggn-nmfs-usamlr-dev-7b99.iam.gserviceaccount.com'
     
     - name: Install dependencies
       run: pip install -r requirements.txt
@@ -199,7 +207,7 @@ jobs:
         tree
     
     - name: Download artifact w processed CMEMS files
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: processed_cmems
         path: data_processing/TopPredatorWatch/rasters/
