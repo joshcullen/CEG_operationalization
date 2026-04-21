@@ -50,8 +50,7 @@ jobs:
     
     # - name: Create GCS Credentials File
     #   run: echo '${{ secrets.GCS_KEY }}' > ./gcs_key.json
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
+    - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v3'
       with:
         # You'll get these strings after setting up WIF in the GCP Console
