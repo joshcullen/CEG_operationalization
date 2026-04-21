@@ -3,8 +3,8 @@
 ### Create multi-variable Zarr for CEG_operationalization and upload to GCS bucket ###
 
 import xarray as xr
-import zarr
-import gcsfs
+# import zarr
+# import gcsfs
 import datetime as dt
 # import glob
 
@@ -45,8 +45,7 @@ ds.to_zarr(
     mode="a-",  # append only specified dims
     append_dim="time",
     consolidated=False,
-    # storage_options={"token": "google_default"}
-    storage_options={"token": "gcs_key.json"})
+    storage_options={"token": "google_default"})
 #took 1.5 min to run (for 41 MB dataset)
 
 
