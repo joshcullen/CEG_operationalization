@@ -3,3 +3,4 @@
 **/*.quarto_ipynb
 gcs_key.json
 requirements.txt
+.Renviron

@@ -27,8 +27,8 @@ print(ds)
 
 
 
-# Define where to store Zarr file in bucket (and here, I'm telling it the new "zarr_cmems" folder to create and write all subfolders)
-zarr_path = "gs://esd-climate-ecosystems-dev/zarr_cmems"
+# Define where to store Zarr file in bucket (and here, I'm telling it the new "zarr_cmems_v2" folder to create and write all subfolders)
+zarr_path = "gs://esd-climate-ecosystems-dev/zarr_cmems_v2"
 
 ## Need to make sure that an application_default_credentials.json is stored in the "~/.config/gcloud/" path
 ## If not, need to run `gcloud auth application-default login` assuming gcloud SDK already installed
@@ -44,7 +44,7 @@ ds.to_zarr(
     zarr_path,
     mode="a-",  # append only specified dims
     append_dim="time",
-    consolidated=False,
+    consolidated=True,
     storage_options={"token": "google_default"})
 #took 1.5 min to run (for 41 MB dataset)
 
@@ -52,7 +52,7 @@ ds.to_zarr(
 
 # Now try reading this Zarr file stored in the bucket
 # ds_cloud = xr.open_zarr(zarr_path, 
-#                         consolidated=False,
+#                         consolidated=True,
 #                         storage_options={"token": "google_default"})  # W/ current permissions, requires creds
 # print(ds_cloud)
 # ds_cloud.chunks

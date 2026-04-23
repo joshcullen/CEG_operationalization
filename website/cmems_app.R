@@ -37,27 +37,37 @@ Sys.setenv(SSL_CERT_FILE = certifi$where())
 Sys.setenv(REQUESTS_CA_BUNDLE = certifi$where())
 
 # Define path for Zarr file
-zarr_path <- "gs://esd-climate-ecosystems-dev/zarr_cmems"
+zarr_path <- "gs://esd-climate-ecosystems-dev/zarr_cmems_v2"
 
 
 # Path to your uploaded Service Account Key
 # IMPORTANT: Ensure this file is in your project folder when you click 'Publish'
-key_file <- "gcs_key.json"
+json_str <- Sys.getenv("GCS_AUTH_JSON")
+temp_key_file <- tempfile(fileext = ".json")
+writeLines(json_str, temp_key_file)
+key_file <- temp_key_file
+
+# Clean up the temporary file when the Shiny session ends
+onStop(function() {
+  if (file.exists(temp_key_file)) {
+    file.remove(temp_key_file)
+  }
+})
 
 
 # Open the dataset using creds (since bucket is currently private)
 ds_cloud <- xr$open_zarr(
   zarr_path, 
-  consolidated = FALSE,
+  consolidated = TRUE,
   # storage_options = list(token = "/Users/joshcullen/.config/gcloud/application_default_credentials.json")
   storage_options = list(token = key_file)
 )
 
 
 # Define list of covars to viz
-covar_list <- ds_cloud$variables$mapping |> 
-  names() |> 
-  str_subset(pattern = "crs|ugosa|vgosa|longitude|latitude|time", negate = TRUE)
+# covar_list <- ds_cloud$variables$mapping |> 
+#   names() |> 
+#   str_subset(pattern = "crs|ugosa|vgosa|longitude|latitude|time", negate = TRUE)
 
 covar_dict <- data.frame(raw_name = c("analysed_sst","eke","CHL","mlotst","nppv","sst_sd","o2","sla"),
                          new_name = c("sst","eke","log_chla","mld","PPupper200m","sst_sd","o2_200m","sla"))
@@ -167,8 +177,8 @@ ui <- page_fluid(
     heights_equal = "row",
     selectInput(inputId = "date",
                 "Select date: ",
-                choices = valid_dates,
-                selected = valid_dates[1],
+                choices = "Loading dates...",
+                # selected = valid_dates[1],
                 multiple = FALSE,
                 width = "150px"),
     
@@ -176,8 +186,8 @@ ui <- page_fluid(
                 "Select variable: ",
                 # choices = unique(env_rasters$layer),
                 # selected = unique(env_rasters$layer)[1],
-                choices = covar_dict$new_name[which(covar_dict$raw_name %in% covar_list)],
-                selected = covar_dict$new_name[which(covar_dict$raw_name %in% covar_list[1])],
+                choices = covar_dict$new_name,
+                selected = covar_dict$new_name[1],
                 multiple = FALSE,
                 width = "150px")
   ),
@@ -205,13 +215,21 @@ ui <- page_fluid(
 
 server <- function(input, output, session) {
   
+  #Update dropdown w/ dates from GH files
+  updateSelectInput(session, "date", choices = valid_dates, selected = valid_dates[1])
+  
+  
   ## Filter data based on select input
   pred_rast <- reactive({
+    #Stop execution if date is missing or is the placeholder string
+    req(input$date)
+    req(input$date != "Loading dates...")
+    
     pred_rasters |> 
       filter(date == input$date) |> 
       pull(url) |> 
-      rast() #|> 
-      # project('EPSG:3857')  # Reproject so properly mapped by leaflet
+      rast() |> 
+      project('EPSG:3857')  # Reproject so properly mapped by leaflet
   })
   
   # covar_rast <- reactive({
@@ -224,10 +242,22 @@ server <- function(input, output, session) {
   #     crop(pred_rast())  #crop to match same extent as prediction
   # })
   covar_rast <- reactive({
+    #Stop execution if date is missing or is the placeholder string
+    req(input$date)
+    req(input$date != "Loading dates...")
+    
+    # Need to project the prediction raster back to unprojected 
+    # to match the incoming Zarr extent for cropping
+    base_pred <- pred_rasters |> 
+      filter(date == input$date) |> 
+      pull(url) |> 
+      rast()
+    
     ds_cloud |> 
       read_zarr(get_date = input$date,
                 covar = covar_dict[covar_dict$new_name == input$covar, "raw_name"]) |> 
-      crop(pred_rast())  #crop to match same extent as prediction
+      crop(base_pred) |>  #crop to match same extent as prediction
+      project('EPSG:3857')  # Reproject so properly mapped by leaflet
   })
   
    
@@ -252,14 +282,17 @@ server <- function(input, output, session) {
   
   # Add reactive layer to map
   observe({
+    # STOP execution here if pred_rast() is not ready
+    req(pred_rast())
+    
     # Define color palette for raster layers
     pal <- colorNumeric("inferno", domain = values(pred_rast()), na.color = "transparent")
     
     leafletProxy("pred_map") |> 
       clearControls() |> 
       clearImages() |>
-      addRasterImage(project(pred_rast(), 'EPSG:3857'), colors = pal, opacity = 0.8, group = "HSI", layerId = "HSI") |> 
-      addImageQuery(project(pred_rast(), 'EPSG:3857'), layerId = "HSI") |>  #add raster  query
+      addRasterImage(pred_rast(), colors = pal, opacity = 0.8, group = "HSI", layerId = "HSI") |> 
+      addImageQuery(pred_rast(), layerId = "HSI") |>  #add raster  query
       addLegend(title = "Habitat Suitability", position = "bottomright", pal = pal, values = values(pred_rast()))
   })
   
@@ -300,8 +333,8 @@ server <- function(input, output, session) {
     leafletProxy("covar_map") |> 
       clearControls() |> 
       clearImages() |>
-      addRasterImage(x = project(covar_rast(), 'EPSG:3857'), colors = covar_pal, opacity = 1, group = "covar") |>
-      addImageQuery(project(covar_rast(), 'EPSG:3857'), group = "covar", layerId = "covar") |>  #add raster  query
+      addRasterImage(x = covar_rast(), colors = covar_pal, opacity = 1, group = "covar") |>
+      addImageQuery(covar_rast(), group = "covar", layerId = "covar") |>  #add raster  query
       addLegend(title = paste(input$covar), position = "bottomright", pal = covar_pal,
                 values = values(covar_rast()), layerId = "covar", group = "covar") 
   })
