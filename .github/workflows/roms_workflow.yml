@@ -15,12 +15,12 @@ on:
 
 jobs:
   acquire_roms:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Check out repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         sparse-checkout: |
           metadata/
@@ -65,7 +65,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Check out repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         sparse-checkout: |
           metadata/
@@ -115,7 +115,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Check out repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         sparse-checkout: |
           metadata/
