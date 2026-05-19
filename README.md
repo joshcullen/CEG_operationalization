@@ -3,10 +3,10 @@
 This repository serves as a centralized location for running scheduled jobs that provide input for a variety of operational tools. Specifically, it contains all code necessary to download environmental data from different sources (i.e., ROMS, ERDDAP, CMEMS) on a scheduled basis, make model predictions for relevant marine species, and generate products (e.g., rasters, images).
 
 Here is an example prediction from Top Predator Watch:
-![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2024-11-08.png?raw=true)
+![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-23.png?raw=true)
 
 And here is an example prediction from the ROMS tool:
-![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2024-11-08.png?raw=true)
+![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2025-07-23.png?raw=true)
 
 Based on need, this repo may change to account for additional data sources, models, and species of interest. In its current form, below is a directory tree to show how this repo will be structured:
 

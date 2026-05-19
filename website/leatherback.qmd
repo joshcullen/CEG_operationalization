@@ -24,7 +24,7 @@ and explore the model predictions
 :::
 
 ::: {.column width="40%"}
-![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2024-11-25.png?raw=true){fig-align="center" style="max-width:400px"}
+![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/TopPredatorWatch/img/leatherbackTurtle_2025-07-23.png?raw=true){fig-align="center" style="max-width:400px"}
 
 :::
 :::
@@ -41,7 +41,7 @@ and explore the model predictions
 :::
 
 ::: {.column width="40%"}
-![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2024-11-24.png?raw=true){fig-align="center" style="max-width:400px"}
+![](https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/leatherbackTurtle_2025-07-23.png?raw=true){fig-align="center" style="max-width:400px"}
 :::
 :::
 

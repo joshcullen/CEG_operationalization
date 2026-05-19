@@ -26,7 +26,7 @@
     "href": "lbst_cmems.html#interactive-map",
     "title": "Leatherback CMEMS model",
     "section": "Interactive Map",
-    "text": "Interactive Map\nThis example shows both model predictions and environmental covariates used to estimate the models. Change the date and selected variable to explore these relationships in more detail.",
+    "text": "Interactive Map\nThis example shows both model predictions and environmental covariates used to estimate the models. Change the date and selected variable to explore these relationships in more detail. Layers are available starting from 2025-06-22.",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback CMEMS model"
@@ -58,7 +58,7 @@
     "href": "lbst_roms.html",
     "title": "Leatherback ROMS model",
     "section": "",
-    "text": "The most recent map products from the model are shown below, in addition to an interactive map of the latest prediction.\nStatus of environmental products from ROMS:\nROMS THREDDS server\nROMS has been down for 81 days",
+    "text": "The most recent map products from the model are shown below, in addition to an interactive map of the latest prediction.\nStatus of environmental products from ROMS:\nROMS THREDDS server",
     "crumbs": [
       "Leatherback Sea Turtle",
       "Leatherback ROMS model"
