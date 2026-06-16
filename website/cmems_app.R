@@ -81,7 +81,7 @@ read_zarr <- function(data, get_date, covar) {
   
   # Convert to R terra object
   # We extract the values as a matrix/array and the spatial metadata
-  values <- r_py$data
+  values <- r_py$values
   lons <- r_py$longitude$values
   lats <- r_py$latitude$values
   crs_wkt <- ds_cloud$crs$variable$attrs$crs_wkt
