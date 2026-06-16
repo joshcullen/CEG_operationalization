@@ -9,13 +9,13 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # https://crontab.cronhub.io
-    - cron:  '30 15 * * *'  #scheduled to run at 3:30 pm UTC every day
+    - cron:  '30 14 * * *'  #scheduled to run at 2:30 pm UTC every day
   # triggered by manual activation on GitHub repo website
   workflow_dispatch:
 
 jobs:
   acquire_roms:
-    runs-on: windows-2025-vs2026
+    runs-on: windows-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -34,12 +34,17 @@ jobs:
     - name: Install R
       uses: r-lib/actions/setup-r@v2
       with:
-        r-version: '4.4.3'
+        r-version: '4.5.2'
 
     - name: Install R packages
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
-        cache-version: 4
+        cache-version: always
+    
+    - name: Delete old ROMS data
+      shell: Rscript {0}
+      run: |
+        source("repo_cleanup/delete_old_roms_files.R")
 
     - name: Download ROMS data
       shell: Rscript {0}
@@ -84,12 +89,12 @@ jobs:
     - name: Install R
       uses: r-lib/actions/setup-r@v2
       with:
-        r-version: '4.4.3'
+        r-version: '4.5.2'
 
     - name: Install R packages
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
-        cache-version: 4
+        cache-version: always
 
     - name: Process ROMS netCDFs and created derived vars
       shell: Rscript {0}
@@ -134,12 +139,12 @@ jobs:
     - name: Install R
       uses: r-lib/actions/setup-r@v2
       with:
-        r-version: '4.4.3'
+        r-version: '4.5.2'
 
     - name: Install R packages
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
-        cache-version: 4
+        cache-version: always
 
     - name: Install rnaturalearthhires R package from GitHub
       shell: Rscript {0}
