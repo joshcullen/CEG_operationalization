@@ -68,6 +68,8 @@ jobs:
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        COPERNICUSMARINE_DISABLE_SSL_CONTEXT: True
+        COPERNICUSMARINE_HTTPS_TIMEOUT: 30
       shell: Rscript {0}
       run: |
         source("data_acquisition/R/acquire_cmems.R")
