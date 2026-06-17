@@ -24,6 +24,7 @@ jobs:
       with:
         sparse-checkout: |
           metadata/
+          repo_cleanup/
           data_acquisition/R/
           data_acquisition/netcdfs/roms_ncdfs/
         sparse-checkout-cone-mode: false # Set to false for more granular control
