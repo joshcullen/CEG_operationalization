@@ -68,11 +68,12 @@ jobs:
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        COPERNICUSMARINE_DISABLE_SSL_CONTEXT: True
-        COPERNICUSMARINE_HTTPS_TIMEOUT: 30
-      shell: Rscript {0}
+        COPERNICUSMARINE_DISABLE_SSL_CONTEXT: 'True'
+        COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
+        COPERNICUSMARINE_TRUST_ENV: 'False'
+      shell: bash -el {0}
       run: |
-        source("data_acquisition/R/acquire_cmems.R")
+        Rscript data_acquisition/R/acquire_cmems.R
       working-directory: ${{ github.workspace }}
     
     - name: Create artifact to share data with next job
