@@ -63,58 +63,72 @@ jobs:
       run: |
         source("repo_cleanup/delete_old_cmems_files.R")
 
-    - name: Preflight Copernicus TLS and domain checks
+    - name: Preflight Copernicus auth and choose TLS mode
       shell: bash -el {0}
-      env:
-        COPERNICUSMARINE_TRUST_ENV: 'False'
-        COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
-      run: |
-        set -euo pipefail
-
-        export COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH="$(python -c 'import certifi; print(certifi.where())')"
-
-        python - <<'PY'
-        import requests
-        from requests.exceptions import SSLError, RequestException
-
-        urls = [
-            "https://auth.marine.copernicus.eu",
-            "https://s3.waw3-1.cloudferro.com/mdl-metadata/clientsConfigV1.json",
-            "https://s3.waw4-1.cloudferro.com",
-            "https://stac.marine.copernicus.eu",
-        ]
-
-        for url in urls:
-            print(f"\nChecking {url}")
-            try:
-                r = requests.get(url, timeout=30)
-                print("HTTP status:", r.status_code)
-                if "clientsConfigV1.json" in url:
-                    r.raise_for_status()
-                    print("JSON keys:", list(r.json().keys())[:5])
-            except SSLError as e:
-                print("SSL_ERROR:", repr(e))
-                raise
-            except RequestException as e:
-                print("REQUEST_ERROR:", repr(e))
-                # Don't always fail on auth/stac HEAD/GET behavior; the important part is
-                # distinguishing TLS failure from normal HTTP behavior.
-        PY
-    
-    - name: Download CMEMS data
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        COPERNICUSMARINE_HTTPS_RETRIES: '3'
-        COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
         COPERNICUSMARINE_TRUST_ENV: 'False'
-      shell: bash -el {0}
+        COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
+        COPERNICUSMARINE_HTTPS_RETRIES: '1'
       run: |
         set -euo pipefail
 
-        # Try the CA bundle from the active Conda/Python environment.
-        export COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH="$(python -c 'import certifi; print(certifi.where())')"
+        CERT_PATH="$(python -c 'import certifi; print(certifi.where())')"
 
+        # Persist toolbox network settings for later steps.
+        echo "COPERNICUSMARINE_TRUST_ENV=False" >> "$GITHUB_ENV"
+        echo "COPERNICUSMARINE_HTTPS_TIMEOUT=30" >> "$GITHUB_ENV"
+        echo "COPERNICUSMARINE_HTTPS_RETRIES=3" >> "$GITHUB_ENV"
+        echo "COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH=$CERT_PATH" >> "$GITHUB_ENV"
+
+        echo "Python: $(which python)"
+        echo "Copernicus Marine Toolbox: $(which copernicusmarine)"
+        copernicusmarine --version
+        echo "certifi bundle: $CERT_PATH"
+
+        echo ""
+        echo "Network diagnostics for auth.marine.copernicus.eu"
+        getent ahostsv4 auth.marine.copernicus.eu || true
+        getent ahostsv6 auth.marine.copernicus.eu || true
+
+        echo ""
+        echo "curl IPv4 check:"
+        curl -4 -Iv --connect-timeout 10 --max-time 20 https://auth.marine.copernicus.eu/ || true
+
+        echo ""
+        echo "curl IPv6 check:"
+        curl -6 -Iv --connect-timeout 10 --max-time 20 https://auth.marine.copernicus.eu/ || true
+
+        echo ""
+        echo "Testing Copernicus credential check with verified TLS..."
+        set +e
+        timeout 90s copernicusmarine login --check-credentials-valid --log-level DEBUG
+        verified_rc=$?
+        set -e
+
+        if [ "$verified_rc" -eq 0 ]; then
+          echo "Verified TLS auth works. No SSL-context bypass needed."
+        else
+          echo "::warning::Verified Copernicus auth failed with exit code $verified_rc. Trying toolbox SSL-context bypass for this run."
+
+          # This suppresses only the warning text if the fallback is used.
+          # It does not make the SSL bypass more secure.
+          echo "COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True" >> "$GITHUB_ENV"
+          echo "PYTHONWARNINGS=ignore::urllib3.exceptions.InsecureRequestWarning" >> "$GITHUB_ENV"
+
+          timeout 90s env COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True \
+            copernicusmarine login --check-credentials-valid --log-level DEBUG
+        fi
+    
+    - name: Download CMEMS data
+      timeout-minutes: 30
+      env:
+        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+      shell: bash -el {0}
+      run: |
+        set -euo pipefail
         timeout 25m Rscript data_acquisition/R/acquire_cmems.R
       working-directory: ${{ github.workspace }}
     
