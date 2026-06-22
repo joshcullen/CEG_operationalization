@@ -46,8 +46,7 @@ jobs:
     - name: Install Copernicus Marine Toolbox
       shell: bash -el {0}
       run: |
-        conda install -c conda-forge copernicusmarine
-        conda install scipy
+        conda install -c conda-forge copernicusmarine scipy
 
     - name: Install R
       uses: r-lib/actions/setup-r@v2
@@ -64,16 +63,59 @@ jobs:
       run: |
         source("repo_cleanup/delete_old_cmems_files.R")
 
+    - name: Preflight Copernicus TLS and domain checks
+      shell: bash -el {0}
+      env:
+        COPERNICUSMARINE_TRUST_ENV: 'False'
+        COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
+      run: |
+        set -euo pipefail
+
+        export COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH="$(python -c 'import certifi; print(certifi.where())')"
+
+        python - <<'PY'
+        import requests
+        from requests.exceptions import SSLError, RequestException
+
+        urls = [
+            "https://auth.marine.copernicus.eu",
+            "https://s3.waw3-1.cloudferro.com/mdl-metadata/clientsConfigV1.json",
+            "https://s3.waw4-1.cloudferro.com",
+            "https://stac.marine.copernicus.eu",
+        ]
+
+        for url in urls:
+            print(f"\nChecking {url}")
+            try:
+                r = requests.get(url, timeout=30)
+                print("HTTP status:", r.status_code)
+                if "clientsConfigV1.json" in url:
+                    r.raise_for_status()
+                    print("JSON keys:", list(r.json().keys())[:5])
+            except SSLError as e:
+                print("SSL_ERROR:", repr(e))
+                raise
+            except RequestException as e:
+                print("REQUEST_ERROR:", repr(e))
+                # Don't always fail on auth/stac HEAD/GET behavior; the important part is
+                # distinguishing TLS failure from normal HTTP behavior.
+        PY
+    
     - name: Download CMEMS data
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        COPERNICUSMARINE_DISABLE_SSL_CONTEXT: 'True'
+        COPERNICUSMARINE_HTTPS_RETRIES: '3'
         COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
         COPERNICUSMARINE_TRUST_ENV: 'False'
       shell: bash -el {0}
       run: |
-        Rscript data_acquisition/R/acquire_cmems.R
+        set -euo pipefail
+
+        # Try the CA bundle from the active Conda/Python environment.
+        export COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH="$(python -c 'import certifi; print(certifi.where())')"
+
+        timeout 25m Rscript data_acquisition/R/acquire_cmems.R
       working-directory: ${{ github.workspace }}
     
     - name: Create artifact to share data with next job
