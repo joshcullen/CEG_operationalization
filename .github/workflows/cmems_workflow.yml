@@ -63,20 +63,13 @@ jobs:
       run: |
         source("repo_cleanup/delete_old_cmems_files.R")
 
-    - name: Preflight Copernicus auth and choose TLS mode
+    - name: Configure Copernicus Marine network settings
       shell: bash -el {0}
-      env:
-        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        COPERNICUSMARINE_TRUST_ENV: 'False'
-        COPERNICUSMARINE_HTTPS_TIMEOUT: '30'
-        COPERNICUSMARINE_HTTPS_RETRIES: '1'
       run: |
         set -euo pipefail
 
         CERT_PATH="$(python -c 'import certifi; print(certifi.where())')"
 
-        # Persist toolbox network settings for later steps.
         echo "COPERNICUSMARINE_TRUST_ENV=False" >> "$GITHUB_ENV"
         echo "COPERNICUSMARINE_HTTPS_TIMEOUT=30" >> "$GITHUB_ENV"
         echo "COPERNICUSMARINE_HTTPS_RETRIES=3" >> "$GITHUB_ENV"
@@ -87,39 +80,31 @@ jobs:
         copernicusmarine --version
         echo "certifi bundle: $CERT_PATH"
 
-        echo ""
-        echo "Network diagnostics for auth.marine.copernicus.eu"
-        getent ahostsv4 auth.marine.copernicus.eu || true
-        getent ahostsv6 auth.marine.copernicus.eu || true
+    - name: Preflight Copernicus credentials
+      shell: bash -el {0}
+      env:
+        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+      run: |
+        set -euo pipefail
 
-        echo ""
-        echo "curl IPv4 check:"
-        curl -4 -Iv --connect-timeout 10 --max-time 20 https://auth.marine.copernicus.eu/ || true
+        for attempt in 1 2 3; do
+          echo "Copernicus credential check attempt ${attempt}/3"
 
-        echo ""
-        echo "curl IPv6 check:"
-        curl -6 -Iv --connect-timeout 10 --max-time 20 https://auth.marine.copernicus.eu/ || true
+          if timeout 90s copernicusmarine login --check-credentials-valid --log-level DEBUG; then
+            echo "Verified TLS auth works. No SSL-context bypass needed."
+            exit 0
+          fi
 
-        echo ""
-        echo "Testing Copernicus credential check with verified TLS..."
-        set +e
-        timeout 90s copernicusmarine login --check-credentials-valid --log-level DEBUG
-        verified_rc=$?
-        set -e
+          rc=$?
+          echo "::warning::Credential check attempt ${attempt} failed with exit code ${rc}"
+          sleep_seconds=$((30 * attempt + RANDOM % 30))
+          echo "Sleeping ${sleep_seconds}s before retry"
+          sleep "$sleep_seconds"
+        done
 
-        if [ "$verified_rc" -eq 0 ]; then
-          echo "Verified TLS auth works. No SSL-context bypass needed."
-        else
-          echo "::warning::Verified Copernicus auth failed with exit code $verified_rc. Trying toolbox SSL-context bypass for this run."
-
-          # This suppresses only the warning text if the fallback is used.
-          # It does not make the SSL bypass more secure.
-          echo "COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True" >> "$GITHUB_ENV"
-          echo "PYTHONWARNINGS=ignore::urllib3.exceptions.InsecureRequestWarning" >> "$GITHUB_ENV"
-
-          timeout 90s env COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True \
-            copernicusmarine login --check-credentials-valid --log-level DEBUG
-        fi
+        echo "::error::Copernicus credential check failed after 3 attempts"
+        exit 1
     
     - name: Download CMEMS data
       timeout-minutes: 30
