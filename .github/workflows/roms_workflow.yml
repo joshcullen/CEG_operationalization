@@ -146,12 +146,14 @@ jobs:
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         cache-version: always
+        extra-packages:
+          ropensci/rnaturalearthhires
 
-    - name: Install rnaturalearthhires R package from GitHub
-      shell: Rscript {0}
-      run: |
-        install.packages("remotes")
-        remotes::install_github("ropensci/rnaturalearthhires")
+    # - name: Install rnaturalearthhires R package from GitHub
+    #   shell: Rscript {0}
+    #   run: |
+    #     install.packages("remotes")
+    #     remotes::install_github("ropensci/rnaturalearthhires")
 
     - name: Make predictions for ROMS tool
       shell: Rscript {0}
