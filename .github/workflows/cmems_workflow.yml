@@ -15,9 +15,11 @@ on:
 
 jobs:
   download_cmems:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+      COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
     steps:
     - name: Check out repository
       uses: actions/checkout@v5
@@ -38,6 +40,7 @@ jobs:
         auto-update-conda: true
         channels: conda-forge,defaults
         python-version: 3.12
+        activate-environment: test
 
     # - name: Check disk space
     #   run: |
@@ -65,12 +68,8 @@ jobs:
 
     - name: Download CMEMS data
       timeout-minutes: 30
-      env:
-        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
       shell: Rscript {0}
-      run: |
-        source("data_acquisition/R/acquire_cmems.R")
+      run: source("data_acquisition/R/acquire_cmems.R")
     
     - name: Create artifact to share data with next job
       uses: actions/upload-artifact@v7
