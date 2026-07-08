@@ -65,6 +65,10 @@ jobs:
       shell: Rscript {0}
       run: |
         source("repo_cleanup/delete_old_cmems_files.R")
+    
+    - name: Prefer IPv4 over IPv6
+      run: sudo sh -c "echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf"
+
 
     - name: Download CMEMS data
       timeout-minutes: 30
