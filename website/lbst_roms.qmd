@@ -18,17 +18,40 @@ to an interactive map of the latest prediction.
 #| warning: false
 #| include: false
 
+library(bslib)
+library(htmltools)
+library(httr)
+library(glue)
+library(dplyr)
+library(lubridate)
+
 source("utils.R")
 
 # Set today's date
 get_date <- Sys.Date()
 
 # Define dates of interest (related to 4-day lag from ROMS server)
-dates <- get_date - 0:5
+# dates <- get_date - 0:5
 
 # ROMS status check
-status <- sapply(dates, \(x) check_roms(x)) |> 
-  any()
+# status <- sapply(dates, \(x) check_roms(x)) |> 
+#   any()
+
+# Find latest products in GH repo
+prods <- GET("https://api.github.com/repos/joshcullen/CEG_operationalization/contents/model_prediction/ROMS/img")
+stop_for_status(prods)
+filelist <- unlist(lapply(content(prods), "[", "name"), use.names = F)
+prod_dates <- data.frame(idx = seq_along(filelist),
+                         date = gsub("^[A-Za-z]+\\_|\\.png$", "", filelist) |> 
+                           as.Date()
+                         )
+
+latest <- prod_dates |> 
+  arrange(desc(date))
+
+# ROMS status check
+status <- latest$date[1] >= (get_date - days(5))
+
 
 # Create badge based on result of ROMS status check
 badge <- ifelse(status,
@@ -41,17 +64,19 @@ if (status == FALSE) {
   dates1 <- get_date
   status1 <- FALSE
   
-  while (status1 == FALSE) {
-    status1 <- check_roms(dates1 - 1)
-    
-    if (status1 == TRUE) {
-      days_down <- as.numeric(get_date - dates1)
-      break
-    } else {
-      dates1 <- dates1 - 1
-    }
-    
-  }
+  # while (status1 == FALSE) {
+  #   status1 <- check_roms(dates1 - 1)
+  #   
+  #   if (status1 == TRUE) {
+  #     days_down <- as.numeric(get_date - dates1)
+  #     break
+  #   } else {
+  #     dates1 <- dates1 - 1
+  #   }
+  #   
+  # }
+  
+  days_down <- as.numeric(get_date - latest$date[1] - 1)
   
 }
 
@@ -66,11 +91,6 @@ if (status == FALSE) {
 ## Latest Map Products
 
 ```{r}
-library(bslib)
-library(htmltools)
-library(httr)
-library(glue)
-library(dplyr)
 
 bs_theme_dependencies(bs_theme(preset = "bootstrap")) |>
   lapply(function(x) {
@@ -82,19 +102,7 @@ bs_theme_dependencies(bs_theme(preset = "bootstrap")) |>
   htmltools::tagList()
 
 
-# Find latest products in GH repo
-prods <- GET("https://api.github.com/repos/joshcullen/CEG_operationalization/contents/model_prediction/ROMS/img")
-stop_for_status(prods)
-filelist <- unlist(lapply(content(prods), "[", "name"), use.names = F)
-prod_dates <- data.frame(idx = seq_along(filelist),
-                         date = gsub("^[A-Za-z]+\\_|\\.png$", "", filelist) |> 
-                           as.Date()
-                         )
-
-latest <- prod_dates |> 
-  arrange(desc(date))
-
-
+# Viz latest set of products
 navset_card_tab(
   nav_panel(title = "Latest",
             img(src = glue("https://github.com/joshcullen/CEG_operationalization/blob/main/model_prediction/ROMS/img/{filelist[latest$idx[1]]}?raw=true", width = "100%"))),
