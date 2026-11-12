@@ -90,7 +90,12 @@ covar_dates_used <- purrr::map_dfr(dyn_vars, function(var) {
     d <- dates_to_try[i]
     
     # Construct the expected filename (assuming "{var}_{date}.nc" format)
-    infile <- glue::glue("{var}_{d}.nc")
+    if (var == 'day') {
+      infile <- glue::glue("{var}_{d}.tiff")  #"day" only file stored as geoTIFF
+    } else {
+      infile <- glue::glue("{var}_{d}.nc")
+    }
+    
     filepath <- file.path(dyn_rast_dir_TopPred, infile)
     
     # If the file exists, lock it in and break the loop

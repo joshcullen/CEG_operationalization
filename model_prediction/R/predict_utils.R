@@ -4,7 +4,7 @@
 #'
 #' The code for generating model predictions is currently written in a format that is generalizable across multiple tools. Some additional steps may be needed based on how the models were fitted and/or if masking of environmental rasters is necessary.
 #'
-#' @param dyn_rast_dir File path from which to import dynamic raster layers.
+#' @param dyn_rast_files Vector of explicit file paths from which to import dynamic raster layers.
 #' @param static_rast_dir File path from which to import static raster layers.
 #' @param savename The file name to save the derived raster.
 #' @param get_date Date of interest in YYYY-MM-DD format.
@@ -16,14 +16,15 @@
 #' @return Generates and exports a predictive surface for each species of interest.
 #'
 #' @export
-predict_models = function(dyn_rast_dir, static_rast_dir, savename, get_date, bbox = NULL,
+predict_models = function(dyn_rast_files, static_rast_dir, savename, get_date, bbox = NULL,
                           mod, pred_rast_dir, tool) {
   
   print(glue("Starting model prediction for {savename}"))
   
   # Load rasters and rename layers
-  dyn_rast <- rast(list.files(dyn_rast_dir, pattern = paste(get_date), full.names = TRUE))
-  dyn_names <- list.files(dyn_rast_dir, pattern = paste(get_date)) |>
+  dyn_rast <- rast(dyn_rast_files)
+  dyn_names <- dyn_rast_files |>
+    basename() |> 
     str_remove(pattern = glue("_{get_date}.*$"))
   names(dyn_rast) <- dyn_names
   

@@ -1,79 +1,85 @@
 
-
 ### Create multi-variable Zarr for CEG_operationalization and upload to GCS bucket ###
 
 import xarray as xr
-# import zarr
-# import gcsfs
 import datetime as dt
-# import glob
+import glob
 import os
 import sys
+import re
 
-
-# Load in netCDFs
-get_date = (dt.date.today() - dt.timedelta(days=1)).strftime("%Y-%m-%d")  #yesterday
-
-file_path = f"data_processing/TopPredatorWatch/rasters/*{get_date}.nc"
-# all_files = glob.glob(file_path)
-# exclude_list = ["ugosa", "vgosa"]
-# filtered_files = [f for f in all_files if not any(x in f for x in exclude_list)]
-
-ds = xr.open_mfdataset(file_path)
-
-# Validate that all required layers are present
-required_vars = ['CHL','nppv','eke','mlotst','o2','sla','analysed_sst','sst_sd','ugosa','vgosa'] # Update this string to match your exact NetCDF variable name (e.g., 'chl' or 'CHL')
-missing_vars = [var for var in required_vars if var not in ds.data_vars]
-
-gh_env = os.getenv('GITHUB_ENV')
-
-if missing_vars:
-    print(f"ZARR UPDATE SKIPPED: Missing required variables: {missing_vars}.")
-    # Exit with status 0 so the job doesn't fail, but skip the to_zarr execution
-    sys.exit(0) 
-
-print("All required variables present. Updating Zarr store.")
-
-print(f"Size in TB: {ds.nbytes / 1e12:.2f} TB")
-print(ds)
-
-
-
-
-# Define where to store Zarr file in bucket (and here, I'm telling it the new "zarr_cmems_v2" folder to create and write all subfolders)
+# 1. Define required variables, Zarr path, and local directory
+required_vars = ['CHL','nppv','eke','mlotst','o2','sla','analysed_sst','sst_sd','ugosa','vgosa']
 zarr_path = "gs://esd-climate-ecosystems-dev/zarr_cmems_v2"
+raster_dir = "data_processing/TopPredatorWatch/rasters"
 
-## Need to make sure that an application_default_credentials.json is stored in the "~/.config/gcloud/" path
-## If not, need to run `gcloud auth application-default login` assuming gcloud SDK already installed
+# 2. Get existing dates from the Zarr store to prevent duplicates
+try:
+    ds_cloud = xr.open_zarr(
+        zarr_path, 
+        consolidated=True, 
+        storage_options={"token": "google_default"}
+    )
+    # Extract existing dates as a set of 'YYYY-MM-DD' strings
+    existing_dates = set(ds_cloud.time.dt.strftime('%Y-%m-%d').values)
+    print(f"Found {len(existing_dates)} dates already in Zarr store.")
+except Exception as e:
+    print("Could not load existing Zarr store (it may be empty/new). Proceeding with empty set.")
+    existing_dates = set()
 
-# Ensure that all variables include a time dim (by matching dims from sst)
-# ds = ds.broadcast_like(ds[['analysed_sst']])
-# ds['crs'] = ds['crs'].isel(time=0, drop=True)
-ds['crs'] = ds['crs'].expand_dims('time')  #needs to match format in bucket
+# 3. Find all unique dates present in the local rasters directory
+all_files = glob.glob(f"{raster_dir}/*.nc")
+date_pattern = re.compile(r'\d{4}-\d{2}-\d{2}')
+local_dates = set()
 
-# Write to cloud bucket
-#%%time  #not working right now (for some reason)
-ds.to_zarr(
-    zarr_path,
-    mode="a-",  # append only specified dims
-    append_dim="time",
-    consolidated=True,
-    storage_options={"token": "google_default"})
-#took 1.5 min to run (for 41 MB dataset)
+for f in all_files:
+    match = date_pattern.search(f)
+    if match:
+        local_dates.add(match.group())
 
+# 4. Isolate NEW dates and sort them chronologically (Critical for Zarr appending)
+dates_to_process = sorted(list(local_dates - existing_dates))
 
+if not dates_to_process:
+    print("No new/unappended dates found in the local directory. Exiting cleanly.")
+    sys.exit(0)
 
-# Now try reading this Zarr file stored in the bucket
-# ds_cloud = xr.open_zarr(zarr_path, 
-#                         consolidated=True,
-#                         storage_options={"token": "google_default"})  # W/ current permissions, requires creds
-# print(ds_cloud)
-# ds_cloud.chunks
+print(f"Found {len(dates_to_process)} new date(s) to evaluate: {dates_to_process}")
 
-# # Subset Zarr data from cloud and plot
-# ds_cloud['analysed_sst'].sel(
-#   latitude=slice(50, 20), 
-#   longitude=slice(220, 260)
-#   ).isel(time=-1).plot(aspect="equal", size=7)
+# 5. Process and append each new date sequentially
+for process_date in dates_to_process:
+    print(f"\n--- Evaluating data for {process_date} ---")
+    
+    file_path = f"{raster_dir}/*{process_date}.nc"
+    
+    try:
+        ds = xr.open_mfdataset(file_path)
+    except Exception as e:
+        print(f"Error opening datasets for {process_date}: {e}")
+        continue
+    
+    # Validate that all required layers are present for this specific date
+    missing_vars = [var for var in required_vars if var not in ds.data_vars]
+    
+    if missing_vars:
+        print(f"ZARR UPDATE SKIPPED FOR {process_date}: Missing required variables: {missing_vars}.")
+        # Continue to the next date in the loop instead of failing the script entirely
+        continue 
+    
+    print(f"All required variables present for {process_date}. Appending to Zarr store.")
+    
+    # Ensure that all variables include a time dim (by matching dims from sst)
+    ds['crs'] = ds['crs'].expand_dims('time')
+    
+    # Write to cloud bucket
+    ds.to_zarr(
+        zarr_path,
+        mode="a-",  # append only specified dims
+        append_dim="time",
+        consolidated=True,
+        storage_options={"token": "google_default"}
+    )
+    
+    print(f"Successfully appended {process_date} to Zarr store.")
 
-# ds_cloud.time.values
+print("\nZarr update routine completed.")
