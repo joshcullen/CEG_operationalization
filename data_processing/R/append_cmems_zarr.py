@@ -7,6 +7,8 @@ import xarray as xr
 # import gcsfs
 import datetime as dt
 # import glob
+import os
+import sys
 
 
 # Load in netCDFs
@@ -19,9 +21,20 @@ file_path = f"data_processing/TopPredatorWatch/rasters/*{get_date}.nc"
 
 ds = xr.open_mfdataset(file_path)
 
-# View size of dataset
+# Validate that all required layers are present
+required_vars = ['CHL','nppv','eke','mlotst','o2','sla','analysed_sst','sst_sd','ugosa','vgosa'] # Update this string to match your exact NetCDF variable name (e.g., 'chl' or 'CHL')
+missing_vars = [var for var in required_vars if var not in ds.data_vars]
+
+gh_env = os.getenv('GITHUB_ENV')
+
+if missing_vars:
+    print(f"ZARR UPDATE SKIPPED: Missing required variables: {missing_vars}.")
+    # Exit with status 0 so the job doesn't fail, but skip the to_zarr execution
+    sys.exit(0) 
+
+print("All required variables present. Updating Zarr store.")
+
 print(f"Size in TB: {ds.nbytes / 1e12:.2f} TB")
-ds.sizes
 print(ds)
 
 
