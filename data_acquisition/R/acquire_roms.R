@@ -8,9 +8,45 @@ library(lubridate)
 library(glue)
 library(terra)
 library(ncdf4)
+library(httr)
 
 source("data_acquisition/R/acquire_utils.R")
 
+
+
+##########################################
+### Check if ROMS THREDDS server is up ###
+##########################################
+
+# Ping the THREDDS server before starting the workflow
+thredds_url <- "https://oceanmodeling.ucsc.edu/thredds/dodsC/ccsra_2016a_phys_agg_zlevs/fmrc/CCSRA_2016a_Phys_ROMS_z-level_(depth)_Aggregation_best.ncd.html"
+
+server_is_up <- tryCatch({
+  res <- httr::HEAD(thredds_url, httr::timeout(15))
+  httr::status_code(res) == 200
+}, error = function(e) FALSE)
+
+gh_env <- Sys.getenv("GITHUB_ENV")
+
+if (!server_is_up) {
+  message("THREDDS server is currently down. Halting workflow gracefully.")
+  if (gh_env != "") cat("PROCEED=false\n", file = gh_env, append = TRUE)
+  
+  # Exit cleanly with status 0 so GitHub Actions doesn't register a "failed" workflow
+  quit(save = "no", status = 0, runLast = FALSE) 
+
+}
+
+
+
+
+
+
+
+
+##########################
+### Set up environment ###
+##########################
 
 # Load metadata
 meta <- read_csv("metadata/model_metadata.csv")
@@ -25,6 +61,9 @@ get_date <- Sys.Date() - 1
 # Define dates of interest (related to 4-day lag from ROMS server)
 dates <- get_date - 0:5
 
+
+# Initialize a flag to track if ANY data was successfully downloaded
+data_downloaded <- FALSE
 
 
 
@@ -57,6 +96,8 @@ walk(dates, function(z){
                                  .x$variable,
                                  .x$savename,
                                  z))
+      # If the above succeeds without error, mark flag as TRUE
+      data_downloaded <<- TRUE
       
     },
     error = function(e){
@@ -67,4 +108,16 @@ walk(dates, function(z){
   
 })
 
+
+# Evaluate the "download" flag
+gh_env <- Sys.getenv("GITHUB_ENV")
+
+if (!data_downloaded) {
+  message("No ROMS data was available to download for any dates. Halting workflow gracefully.")
+  if (gh_env != "") cat("PROCEED=false\n", file = gh_env, append = TRUE)
+  quit(save = "no", status = 0, runLast = FALSE) 
+} else {
+  message("ROMS data acquired successfully.")
+  if (gh_env != "") cat("PROCEED=true\n", file = gh_env, append = TRUE)
+}
 

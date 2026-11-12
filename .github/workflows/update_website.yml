@@ -4,7 +4,7 @@ name: Update Website
 on:
   # triggered by previous GHA completion in workflow
   workflow_run:
-    workflows: ["CMEMS model workflow","ROMS model workflow"]
+    workflows: ["CMEMS model workflow"]
     types:
       - completed
   # triggered by manual activation on GitHub repo website
