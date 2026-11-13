@@ -35,6 +35,11 @@ meta_cmems <- meta |>
 
 log_path <- "metadata/missing_cmems_layers.csv"  #for storing missing variable data
 
+# Dynamically store path for 'copernicusmarine'
+copernicusmarine_path <- Sys.getenv("COPERNICUSMARINE_PATH")
+if (copernicusmarine_path == "") copernicusmarine_path <- "/home/runner/miniconda3/envs/test/bin/copernicusmarine"
+message(glue("Using Copernicus Marine Toolbox at: {copernicusmarine_path}"))
+
 
 
 
@@ -65,7 +70,7 @@ if (file.exists(log_path)) {
         
         tryCatch({
           download_cmems(
-            "/usr/share/miniconda/envs/test/bin/copernicusmarine",
+            copernicusmarine_path,
             ncdir_cmems, prod, var, sname, as.Date(d), dmin, dmax
           )
         }, error = function(e) {
@@ -109,7 +114,7 @@ tryCatch(
     purrr::map(
       cmems_product_list,
       ~ download_cmems(
-        "/usr/share/miniconda/envs/test/bin/copernicusmarine",
+        copernicusmarine_path,
         ncdir_cmems,
         .x$product,
         .x$variable,

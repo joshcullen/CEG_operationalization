@@ -15,7 +15,7 @@ on:
 
 jobs:
   download_cmems:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
@@ -50,6 +50,9 @@ jobs:
       shell: bash -el {0}
       run: |
         conda install -c conda-forge copernicusmarine scipy
+        # Capture Path for R
+        TOOL_PATH=$(which copernicusmarine)
+        echo "COPERNICUSMARINE_PATH=$TOOL_PATH" >> $GITHUB_ENV
 
     - name: Install R
       uses: r-lib/actions/setup-r@v2
