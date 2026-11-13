@@ -7,6 +7,7 @@ library(dplyr)
 library(purrr)
 library(readr)
 library(lubridate)
+library(ncdf4)
 
 source("data_processing/R/process_utils.R")
 
