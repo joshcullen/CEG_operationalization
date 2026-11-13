@@ -58,7 +58,7 @@ walk(dates, function(z){
       purrr::pmap(list(mod.list_ROMS,
                        savename_ROMS),
                   ~predict_models(
-                    dyn_rast_dir = dyn_rast_dir_ROMS,
+                    dyn_rast_files = str_subset(list.files(dyn_rast_dir_ROMS, full.names = TRUE), pattern = z),
                     static_rast_dir = static_rast_dir_ROMS,
                     savename = ..2,
                     get_date = z,

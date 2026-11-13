@@ -49,6 +49,11 @@ predict_models = function(dyn_rast_files, static_rast_dir, savename, get_date, b
                  stop("Tool must be one of either 'TopPredatorWatch' or 'ROMS'.")
   )
   
+  # Mask land for ROMS prediction
+  if (tool == 'ROMS') {
+    pred <- mask(pred, dyn_rast$bv)
+  }
+  
   
   # Export prediction raster
   writeRaster(pred, glue("{pred_rast_dir}/pred_{get_date}_{savename}.tiff"), overwrite = TRUE)
