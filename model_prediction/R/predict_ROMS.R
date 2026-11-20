@@ -50,6 +50,7 @@ savename_ROMS <- "leatherbackTurtle"
 # Map workflow across date range
 walk(dates, function(z){
   
+  z <- as.character(z)
   cat(glue("Processing data for {z}"))
   
   tryCatch(
