@@ -121,7 +121,7 @@ jobs:
         git fetch origin gh-pages --depth=1
         git pull
         git add .
-        git commit -m 'Processed ROMS files'
+        git commit -m 'Processed ROMS files' || echo "Nothing to commit"
         git push
 
   predict_ROMS:
